@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="V1__Init.sql" type="DatabaseScript" editBeforeRun="true" singleton="false" nameIsGenerated="true">
+    <script-file value="$PROJECT_DIR$/src/main/resources/db/migration/V1__Init.sql" />
+    <script-mode>FILE</script-mode>
+    <data-source id="b5220528-b5a7-4c40-a0b6-92baeb76866a" namespace="schema/&quot;order_system_spring_db&quot;" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>item-menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%; /* обязательно, чтобы body занимал всю высоту окна */
+            margin: 0;
+            background-color: #f5d9b0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center; /* центр по горизонтали */
+            align-items: flex-start; /* выравнивание по вертикали сверху */
+            height: 100%;
+            padding-top: 50px; /* сдвигаем вниз на 50px от верха */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* горизонтальное выравнивание внутри контейнера */
+            gap: 20px;           /* отступ между заголовком и блоком продуктов */
+        }
+
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: #ffebcc;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            width: 220px;
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .card h3 {
+            margin: 10px 0 5px 0;
+        }
+
+        .card p {
+            margin: 5px 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .card .price {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .card button {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .card button:hover {
+            background-color: #45a049;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+<h1>Menu Items</h1>
+    <div class="products">
+        <div class="card" th:each="item : ${itemsList}">
+            <img th:src="${item.imageUrl}" th:alt="${item.itemName}"/>
+            <h3 th:text="${item.itemName}">Product Name</h3>
+            <p th:text="${item.description}">Short description</p>
+            <div class="price" th:text="${item.price} + ' $'">Price</div>
+            <button>Add to Cart</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
