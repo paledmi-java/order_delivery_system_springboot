@@ -26,7 +26,7 @@ public class Client {
     private int clientId;
 
     @Column(name = "is_active")
-    boolean isActive;
+    boolean isActive = true;
 
     @Column(name = "name")
     private String name;
@@ -38,7 +38,7 @@ public class Client {
     private String password;
 
     @Column(name = "is_authorised")
-    private boolean isAuthorised;
+    private boolean isAuthorised = true;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
@@ -50,16 +50,16 @@ public class Client {
     private String email;
 
     @Column(name = "is_advertisable")
-    boolean isAdvertisable;
+    boolean isAdvertisable = true;
 
     @Column(name = "is_profile_complete")
-    boolean isProfileComplete;
+    boolean isProfileComplete = false;
 
     @Column(name = "is_online_check_on")
-    boolean isOnlineCheckOn;
+    boolean isOnlineCheckOn = false;
 
     @Column(name = "bonuses_amount")
-    private int bonusesAmount;
+    private int bonusesAmount = 0;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "credentials_id")
@@ -76,8 +76,8 @@ public class Client {
     orphanRemoval = true)
     private Set<FavouriteItem> favouriteItems = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
-    orphanRemoval = true)
-    private List<ClientAddress> addresses = new ArrayList<>();
+//    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
+//    orphanRemoval = true)
+//    private List<ClientAddress> addresses = new ArrayList<>();
 
 }

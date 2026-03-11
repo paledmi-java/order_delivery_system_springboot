@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <style>
+    body{
+      background-color: #f5d9b0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .container{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding-top: 70px;
+    }
+
+    button{
+      width: 180px;
+      font-size: 17px;
+      color: black;
+      background-color: #dec6a2;
+      border: none;
+      border-radius: 5px;
+      padding: 15px 30px;
+    }
+
+    input{
+      width: 250px;
+      font-size: 17px;
+      color: black;
+      background-color: #dec6a2;
+      border: none;
+      border-radius: 5px;
+      padding: 15px 30px;
+    }
+
+    input:focus{
+      outline: none;
+    }
+
+    form{
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Registration</h1>
+
+  <form th:action="@{/addClient}" th:object="${client}" method="post">
+    <div>
+      <input type="text" th:field="*{phoneNumber}" placeholder="Phone">
+      <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" style="color:red"></p>
+    </div>
+
+    <div>
+      <input type="text" th:field="*{name}" placeholder="Name">
+      <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red"></p>
+    </div>
+
+    <div>
+      <input type="text" th:field="*{login}" placeholder="Login">
+      <p th:if="${#fields.hasErrors('login')}" th:errors="*{login}" style="color:red"></p>
+    </div>
+
+    <div>
+      <input type="password" th:field="*{password}" placeholder="Password">
+      <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color:red"></p>
+    </div>
+
+    <div>
+      <input type="email" th:field="*{email}" placeholder="Email">
+      <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></p>
+    </div>
+
+    <button type="submit">Register</button>
+  </form>
+</div>
+
+</body>
+
+</html>

@@ -1,5 +1,10 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.configuration;
 
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.filters.NoCashFilter;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.handlers.CustomAuthFailureHandler;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.handlers.CustomAuthSuccessHandler;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.CustomUserDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -19,6 +24,21 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final CustomAuthFailureHandler customAuthFailureHandler;
+    private final CustomAuthSuccessHandler customAuthSuccessHandler;
+    private final CustomUserDetailService customUserDetailService;
+    private final NoCashFilter noCashFilter;
+
+    public SecurityConfig(CustomAuthFailureHandler customAuthFailureHandler,
+                          CustomAuthSuccessHandler customAuthSuccessHandler,
+                          CustomUserDetailService customUserDetailService,
+                          NoCashFilter noCashFilter) {
+        this.customAuthFailureHandler = customAuthFailureHandler;
+        this.customAuthSuccessHandler = customAuthSuccessHandler;
+        this.customUserDetailService = customUserDetailService;
+        this.noCashFilter = noCashFilter;
+    }
+
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource){
         return  new JdbcUserDetailsManager(dataSource);
@@ -34,18 +54,28 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home","/login").permitAll()           // корневой URL открыт
+                        .requestMatchers("/", "/home","/login","/addClient").permitAll()
                         .requestMatchers("/images/**").permitAll()
-                        .requestMatchers("/app/public/**").permitAll()      // открытые фронт страницы
-                        .requestMatchers("/app/admin/**").authenticated()  // защищённый фронт
-                        .requestMatchers("/api/public/**").permitAll()      // открытый REST
-                        .requestMatchers("/api/**").authenticated()        // REST требует логин
+                        .requestMatchers("/app/public/**").permitAll()
+                        .requestMatchers("/app/admin/**").authenticated()
+                        .requestMatchers("/app/user/**").authenticated()
+                        .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/**").authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")        // кастомная форма логина
-                        .defaultSuccessUrl("/app/admin")
+                        .loginPage("/login")        //
+                        .successHandler(customAuthSuccessHandler)
+                        .failureHandler(customAuthFailureHandler)
                         .permitAll()
                 )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .invalidateHttpSession(true)   // уничтожаем сессию
+                        .clearAuthentication(true)    // очищаем аутентификацию
+                        .logoutSuccessUrl("/login?logout")
+                )
+                .addFilterAfter(noCashFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+                .userDetailsService(customUserDetailService)
                 .httpBasic(withDefaults());
 
         return http.build();

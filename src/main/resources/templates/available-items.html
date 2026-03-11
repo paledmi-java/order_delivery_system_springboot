@@ -88,14 +88,22 @@
 <body>
 <div class="container">
 <h1>Menu Items</h1>
+
     <div class="products">
-        <div class="card" th:each="item : ${itemsList}">
+
+        <a class="card"
+           th:each="item : ${itemsList}"
+           th:href="@{/app/public/menu/item(itemId=${item.itemId})}">
+
             <img th:src="${item.imageUrl}" th:alt="${item.itemName}"/>
             <h3 th:text="${item.itemName}">Product Name</h3>
             <p th:text="${item.description}">Short description</p>
             <div class="price" th:text="${item.price} + ' $'">Price</div>
-            <button>Add to Cart</button>
-        </div>
+
+            <button type="button">Add to Cart</button>
+
+        </a>
+
     </div>
 </div>
 </body>

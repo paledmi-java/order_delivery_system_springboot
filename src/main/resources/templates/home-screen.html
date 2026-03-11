@@ -56,10 +56,11 @@
     </form>
 <button type="button">Search an Item</button>
 <button type="button">Show my basket</button>
-<button type="button" th:if="${client==null}">Log in</button>
-<button type="button" th:if="${client==null}">Sign up</button>
 
-<button type="button" th:if="${client!=null}">Log out</button>
+<button onclick="location.href='/login'">Log in</button>
+
+<button onclick="location.href='/app/public/register'">Sign up</button>
+
 </div>
 </div>
 
