@@ -14,7 +14,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 
 @Entity
 @Table(name = "clients")
@@ -23,19 +22,13 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int clientId;
+    private Integer clientId;
 
     @Column(name = "is_active")
     boolean isActive = true;
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "login")
-    private String login;
-
-    @Column(name = "password")
-    private String password;
 
     @Column(name = "is_authorised")
     private boolean isAuthorised = true;
@@ -50,17 +43,18 @@ public class Client {
     private String email;
 
     @Column(name = "is_advertisable")
-    boolean isAdvertisable = true;
+    private boolean isAdvertisable = true;
 
     @Column(name = "is_profile_complete")
-    boolean isProfileComplete = false;
+    private boolean isProfileComplete = false;
 
     @Column(name = "is_online_check_on")
-    boolean isOnlineCheckOn = false;
+    private boolean isOnlineCheckOn = false;
 
     @Column(name = "bonuses_amount")
     private int bonusesAmount = 0;
 
+    // заменить fetch на LAZY когда потом буду решать проблему N+1
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "credentials_id")
     private Credentials credentials;
@@ -75,6 +69,13 @@ public class Client {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
     orphanRemoval = true)
     private Set<FavouriteItem> favouriteItems = new LinkedHashSet<>();
+
+    // заменить fetch на LAZY когда потом буду решать проблему N+1
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "bucket_id")
+    private Bucket bucket;
+
+
 
 //    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
 //    orphanRemoval = true)

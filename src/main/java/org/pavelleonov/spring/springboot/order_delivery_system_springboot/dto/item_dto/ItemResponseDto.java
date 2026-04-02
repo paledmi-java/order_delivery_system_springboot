@@ -7,25 +7,21 @@ import jakarta.persistence.Id;
 import lombok.*;
 
 import java.time.LocalDateTime;
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Builder
-@ToString
 
-public class ItemResponseDto {
-
-    private int itemId;
-    private String itemName;
-    private String typeOfItem;
-    private String ingredients;
-    private int amountOfPieces;
-    private int price;
-    private String description;
-    private int mass;
-    private int kcal;
-    private String imageUrl;
-    private boolean hasMultiComp;
-    private boolean isChangeable;
+public record ItemResponseDto(
+        int itemDtoId,
+        String itemName,
+        String typeOfItem,
+        String ingredients,
+        int amountOfPieces,
+        int price,
+        String description,
+        int mass,
+        int kcal,
+        String imageUrl,
+        boolean hasMultiComp,
+        boolean isChangeable
+) {
 }

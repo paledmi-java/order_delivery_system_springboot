@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 @ToString
 
-public class ClientDTO {
+public class ClientCreateDTO {
     @NotBlank(message = "Name can not be empty")
     private String name;
     @NotBlank(message = "Phone number can not be empty")

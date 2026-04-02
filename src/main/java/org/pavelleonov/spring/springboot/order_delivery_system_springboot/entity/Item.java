@@ -11,7 +11,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 
 @Entity
 @Table(name = "items")
@@ -20,7 +19,7 @@ public class Item implements Comparable<Item>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int itemId;
+    private Integer itemId;
 
     @Column(name = "item_name")
     private String itemName;

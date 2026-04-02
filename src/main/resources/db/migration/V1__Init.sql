@@ -1,10 +1,13 @@
-CREATE TABLE credentials(
+CREATE TABLE IF NOT EXISTS credentials(
                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
                             login VARCHAR(50) NOT NULL,
                             hashed_password VARCHAR(255) NOT NULL
 );
+CREATE TABLE IF NOT EXISTS buckets(
+                                      id BIGINT AUTO_INCREMENT PRIMARY KEY
+);
 
-CREATE TABLE items(
+CREATE TABLE IF NOT EXISTS items(
                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
                       item_name VARCHAR(50) NOT NULL,
                       type_of_item VARCHAR(50) NOT NULL,
@@ -22,7 +25,16 @@ CREATE TABLE items(
                       updated_at DATETIME NOT NULL
 );
 
-CREATE TABLE clients(
+CREATE TABLE IF NOT EXISTS bucket_items(
+                                           quantity INT DEFAULT 1,
+                                           bucket_id BIGINT NOT NULL,
+                                           item_id BIGINT NOT NULL,
+                                           PRIMARY KEY (bucket_id, item_id),
+                                           CONSTRAINT fk_bucketitem_bucket FOREIGN KEY (bucket_id) REFERENCES buckets(id),
+                                           CONSTRAINT fk_bucketitem_item FOREIGN KEY (item_id) REFERENCES items(id)
+);
+
+CREATE TABLE IF NOT EXISTS clients(
                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         is_active BOOLEAN NOT NULL,
                         name VARCHAR(50) NOT NULL,
@@ -37,11 +49,14 @@ CREATE TABLE clients(
                         is_online_check_on BOOLEAN NOT NULL,
                         bonuses_amount INT NOT NULL DEFAULT 0,
                         credentials_id BIGINT NOT NULL,
+                        bucket_id BIGINT UNIQUE,
                         CONSTRAINT fk_client_credentials
-                            FOREIGN KEY (credentials_id) REFERENCES credentials(id)
+                            FOREIGN KEY (credentials_id) REFERENCES credentials(id),
+                            CONSTRAINT fk_client_bucket
+                                FOREIGN KEY (bucket_id) REFERENCES buckets(id)
 );
 
-CREATE TABLE client_addresses(
+CREATE TABLE IF NOT EXISTS client_addresses(
                                  id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                  is_default BOOLEAN NOT NULL,
                                  city VARCHAR(50) NOT NULL,
@@ -55,7 +70,7 @@ CREATE TABLE client_addresses(
                                      FOREIGN KEY (client_id) REFERENCES clients(id)
 );
 
-CREATE TABLE favourite_items(
+CREATE TABLE IF NOT EXISTS favourite_items(
                                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                 added_at DATETIME NOT NULL,
                                 last_viewed_at DATETIME NOT NULL,
@@ -70,7 +85,7 @@ CREATE TABLE favourite_items(
                                     FOREIGN KEY (client_id) REFERENCES clients(id)
 );
 
-CREATE TABLE orders(
+CREATE TABLE IF NOT EXISTS orders(
                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
                        price INT NOT NULL,
                        is_delivery_free BOOLEAN NOT NULL,

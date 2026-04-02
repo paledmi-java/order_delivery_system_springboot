@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>item-menu</title>
+    <title>client-bucket</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <style>
         html, body {
@@ -90,22 +90,22 @@
 </head>
 <body>
 <div class="container">
-<h1>Menu Items</h1>
+    <h1>Menu Items</h1>
 
     <div class="products">
 
         <a class="card"
-           th:each="item : ${itemsList}"
-           th:href="@{/app/public/menu/item(itemId=${item.itemId})}">
+           th:each="bucketItem : ${clientBucketItems}"
+           th:href="@{/app/public/menu/item(itemId=${bucketItem.id})}">
 
-            <img th:src="${item.imageUrl}" th:alt="${item.itemName}"/>
+            <img th:src="${bucketItem.imageUrl}" th:alt="${item.itemName}"/>
             <h3 th:text="${item.itemName}">Product Name</h3>
             <p th:text="${item.description}">Short description</p>
             <div class="price" th:text="${item.price} + ' rub'">Price</div>
 
             <form th:action="@{/app/user/putItemInBasket}" th:object="${item}" method="post">
                 <input type="hidden" th:name="itemId" th:value="itemId">
-            <button type="submit">Add to Cart</button>
+                <button type="submit">Add to Cart</button>
             </form>
 
         </a>

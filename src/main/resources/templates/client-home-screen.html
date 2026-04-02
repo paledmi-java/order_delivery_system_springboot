@@ -55,7 +55,11 @@
             <button type="submit">Menu</button>
         </form>
         <button type="button">Search an Item</button>
-        <button type="button">Show my basket</button>
+
+        <form th:action="@{/app/user/bucket}" th:object="${client}" method="get">
+            <input type="hidden" th:name="clientId" th:value="${client.clientId}">
+        <button type="submit">Show my basket</button>
+        </form>
 
         <form th:action="@{/logout}" method="post">
         <button type="submit">Log out</button>

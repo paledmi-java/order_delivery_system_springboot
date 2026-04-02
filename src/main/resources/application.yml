@@ -8,6 +8,14 @@ spring:
     password: 123456qwertyasdfgh
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    user: root
+    password: 123456qwertyasdfgh
+    clean-disabled: false
+
   jpa:
     hibernate:
       ddl-auto: validate   # create / update / validate / none
@@ -15,11 +23,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-    locations: classpath:db/migration
 
   management:
     endpoints:
