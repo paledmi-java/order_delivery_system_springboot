@@ -1,22 +1,19 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.controllers;
 
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientInfoDTO;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientPasswordUpdateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientViewDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.admin.ClientUpdateAdminDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Client;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.filters.ClientFilter;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.CustomUserDetails;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
+@RequestMapping("/api/users")
 public class AdminRestController {
 
     ClientService clientService;
@@ -27,13 +24,15 @@ public class AdminRestController {
         this.clientDtoMapper = clientDtoMapper;
     }
 
-    @GetMapping("/api/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{id}")
     public ClientViewDTO getUser(@PathVariable int id) {
         Client client = clientService.findClient(id);
         return clientDtoMapper.toViewDto(client);
     }
 
-    @PatchMapping("/api/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}")
     public ClientViewDTO updateUser(@PathVariable int id,
                                     @RequestBody ClientUpdateAdminDTO dto) {
 
@@ -41,24 +40,28 @@ public class AdminRestController {
         return clientDtoMapper.toViewDto(client);
     }
 
-    @GetMapping("/api/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/")
     public Page<ClientInfoDTO> getUsers(ClientFilter filter, Pageable pageable) {
         return clientService.searchClients(filter, pageable);
     }
 
-    @PatchMapping("/api/users/{id}/deactivate")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/deactivate")
     public ClientViewDTO deactivateAccount(@PathVariable int id){
         Client client = clientService.findClient(id);
         return clientDtoMapper.toViewDto(clientService.deactivateAccount(client));
     }
 
-    @PatchMapping("/api/users/{id}/activate")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/activate")
     public ClientViewDTO activateAccount(@PathVariable int id){
         Client client = clientService.findClient(id);
         return clientDtoMapper.toViewDto(clientService.activateAccount(client));
     }
 
-    @PostMapping("/api/users/{id}/password")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/password")
     public ClientViewDTO updateClientPassword(@PathVariable int id, String password){
         Client client = clientService.changePasswordAsAdmin(id, password);
         return clientDtoMapper.toViewDto(client);

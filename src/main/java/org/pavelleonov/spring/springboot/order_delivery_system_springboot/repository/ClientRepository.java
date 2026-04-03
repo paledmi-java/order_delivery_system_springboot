@@ -11,5 +11,4 @@ import java.util.Optional;
 public interface ClientRepository extends JpaRepository<Client, Integer>, JpaSpecificationExecutor<Client> {
     Optional<Client> findClientByName(String name); // Make Optional return
     Optional<Client> findByCredentialsLogin(String login);
-    List<Client> getClients();
 }
