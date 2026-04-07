@@ -10,10 +10,10 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.CustomUserDetails;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.ClientService;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final ClientDtoMapper clientDtoMapper;
     private final ClientService clientService;
@@ -34,8 +35,8 @@ public class AuthController {
                         request.getPassword())
                 );
 
-        // если сюда дошли — значит логин успешный
-        return "OK"; // позже заменим на JWT
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return jwtService.generateToken(userDetails.getClient().getCredentials().getLogin());
     }
 
     @PostMapping("/register")

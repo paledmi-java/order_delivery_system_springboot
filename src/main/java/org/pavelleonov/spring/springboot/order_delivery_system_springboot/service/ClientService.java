@@ -8,7 +8,7 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.InvalidPasswordException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.RoleNotFoundException;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.filters.ClientFilter;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.filters.ClientFilter;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.RoleRepository;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class ClientService {
@@ -55,11 +54,21 @@ public class ClientService {
     }
 
     public Client activateAccount(ClientActivateDTO dto) {
-        Client client =
+        Client client = clientRepository.findByCredentialsLogin(dto.getLogin())
+                .orElseThrow(()-> new ClientNotFoundException("Client not found"));
         client.setActive(true);
         clientRepository.save(client);
         return client;
     }
+
+    public Client activateAccountAsAdmin(int id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(()-> new ClientNotFoundException("Client not found"));
+        client.setActive(true);
+        clientRepository.save(client);
+        return client;
+    }
+
 
     public Client updateBaseFields(Client client, BasicClientUpdateDTO dto){
         if(dto.getName() != null) client.setName(dto.getName());
@@ -104,12 +113,12 @@ public class ClientService {
         clientRepository.save(client);
     }
 
-    public Client changePasswordAsAdmin(int id, String password) {
+    public Client changePasswordAsAdmin(int id, ClientAdminPasswordUpdateDTO dto) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
         Credentials credentials = client.getCredentials();
 
-        credentials.setHashedPassword(passwordEncoder.encode(password));
+        credentials.setHashedPassword(passwordEncoder.encode(dto.getNewPassword()));
         client.setCredentials(credentials);
         return clientRepository.save(client);
     }
@@ -143,8 +152,8 @@ public class ClientService {
     }
 
     public Page<ClientInfoDTO> searchClients(ClientFilter clientFilter, Pageable pageable) {
-        Specification<Client> specification = null;
-        specification = Specification.where(specification);
+        Specification<Client> specification =
+                (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
         if(clientFilter.getName() != null){
             specification = specification.and(ClientSpecification.hasName(clientFilter.getName()));

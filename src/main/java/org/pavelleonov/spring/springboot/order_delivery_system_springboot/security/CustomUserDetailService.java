@@ -1,7 +1,7 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.security;
 
+import org.jspecify.annotations.NonNull;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Client;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Credentials;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +18,7 @@ public class CustomUserDetailService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
         Client client =
                 clientRepository.findByCredentialsLogin(username)
                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
