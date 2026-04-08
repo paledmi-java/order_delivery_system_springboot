@@ -24,12 +24,18 @@ spring:
       hibernate:
         format_sql: true
 
-  management:
+management:
     endpoints:
       web:
         exposure:
           include: health, info, metrics
 
-  logging:
+logging:
     level:
       org.springframework.security: trace
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    access-token-expiration-ms: 86400000
+    refresh-token-expiration-ms: 604800000

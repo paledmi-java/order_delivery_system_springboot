@@ -1,5 +1,6 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientCreateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientPasswordUpdateDTO;
@@ -30,12 +31,14 @@ public class ClientRestController {
     }
 
     @GetMapping("/me")
+    @Operation(summary = "Получить текущего пользователя")
     public ClientViewDTO getCurrentUser(@AuthenticationPrincipal CustomUserDetails customUserDetails){
         Client client = customUserDetails.getClient();
         return clientDtoMapper.toViewDto(client);
     }
 
     @PatchMapping("/me/settings")
+    @Operation(summary = "Обновить текущего пользователя")
     public ClientViewDTO updateClientSelf(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                     @Valid @RequestBody ClientUpdateSelfDTO clientUpdateSelfDTO){
 
@@ -45,6 +48,7 @@ public class ClientRestController {
 
 
     @PostMapping("/me/settings/password")
+    @Operation(summary = "Изменить пароль текущего пользователя")
     public ClientViewDTO updateClientPassword(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                               @RequestBody ClientPasswordUpdateDTO dto){
         clientService.changePasswordSelf(customUserDetails, dto);
@@ -52,6 +56,7 @@ public class ClientRestController {
     }
 
     @PatchMapping("/me/settings/deactivate")
+    @Operation(summary = "Деактивировать текущего пользователя")
     public ClientViewDTO deactivateAccount(@AuthenticationPrincipal CustomUserDetails userDetails){
         Client client = userDetails.getClient();
         return clientDtoMapper.toViewDto(clientService.deactivateAccount(client));

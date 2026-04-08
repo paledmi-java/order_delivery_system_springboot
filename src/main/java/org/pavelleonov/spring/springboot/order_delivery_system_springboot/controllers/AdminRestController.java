@@ -1,5 +1,6 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientAdminPasswordUpdateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientInfoDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientViewDTO;
@@ -27,6 +28,7 @@ public class AdminRestController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
+    @Operation(summary = "Получить клиента")
     public ClientViewDTO getUser(@PathVariable int id) {
         Client client = clientService.findClient(id);
         return clientDtoMapper.toViewDto(client);
@@ -34,6 +36,7 @@ public class AdminRestController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
+    @Operation(summary = "Обновить клиента")
     public ClientViewDTO updateUser(@PathVariable int id,
                                     @RequestBody ClientUpdateAdminDTO dto) {
 
@@ -43,12 +46,14 @@ public class AdminRestController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
+    @Operation(summary = "Получить список клиентов")
     public Page<ClientInfoDTO> getUsers(ClientFilter filter, Pageable pageable) {
         return clientService.searchClients(filter, pageable);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/deactivate")
+    @Operation(summary = "Деактивировать аккаунт клиента")
     public ClientViewDTO deactivateAccount(@PathVariable int id){
         Client client = clientService.findClient(id);
         return clientDtoMapper.toViewDto(clientService.deactivateAccount(client));
@@ -56,6 +61,7 @@ public class AdminRestController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/activate")
+    @Operation(summary = "Активировать аккаунт клиента")
     public ClientViewDTO activateAccount(@PathVariable int id){
         Client client = clientService.findClient(id);
         return clientDtoMapper.toViewDto(clientService.activateAccountAsAdmin(id));
@@ -63,6 +69,7 @@ public class AdminRestController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/password")
+    @Operation(summary = "Изменить пароль клиента")
     public ClientViewDTO updateClientPassword(@PathVariable int id,
                                               @RequestBody ClientAdminPasswordUpdateDTO dto){
         Client client = clientService.changePasswordAsAdmin(id, dto);

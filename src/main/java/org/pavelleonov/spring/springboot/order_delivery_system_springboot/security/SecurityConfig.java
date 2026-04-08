@@ -1,5 +1,7 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.security;
 
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.handlers.CustomAccessDeniedHandler;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.handlers.CustomAuthenticationEntryPoint;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.filters.JwtFilter;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.filters.NoCashFilter;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.handlers.CustomAuthFailureHandler;
@@ -28,18 +30,18 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final CustomAuthFailureHandler customAuthFailureHandler;
-    private final CustomAuthSuccessHandler customAuthSuccessHandler;
     private final CustomUserDetailService customUserDetailService;
     private final NoCashFilter noCashFilter;
     private final JwtFilter jwtFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    public SecurityConfig(CustomAuthFailureHandler customAuthFailureHandler, CustomAuthSuccessHandler customAuthSuccessHandler, CustomUserDetailService customUserDetailService, NoCashFilter noCashFilter, JwtFilter jwtFilter) {
-        this.customAuthFailureHandler = customAuthFailureHandler;
-        this.customAuthSuccessHandler = customAuthSuccessHandler;
+    public SecurityConfig(CustomUserDetailService customUserDetailService, NoCashFilter noCashFilter, JwtFilter jwtFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.customUserDetailService = customUserDetailService;
         this.noCashFilter = noCashFilter;
         this.jwtFilter = jwtFilter;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
     @Bean
@@ -69,12 +71,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/webjars/**").permitAll()
                         .requestMatchers("/api/auth/activate").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/me/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(ex->ex
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider(passwordEncoder()))

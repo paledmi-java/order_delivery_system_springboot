@@ -3,25 +3,39 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.secur
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
-    // Перегенерировать в yaml
-    private final Key key = Keys.hmacShaKeyFor(
-            "my-super-secret-key-my-super-secret-key".getBytes(StandardCharsets.UTF_8)
-    );
+    private final Key key;
+    private final JwtProperties jwtProperties;
 
-    public String generateToken(String username){
+    public JwtService(JwtProperties jwtProperties){
+        this.jwtProperties = jwtProperties;
+        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtProperties.getSecret()));
+    }
+
+    public String generateAccessToken(String username){
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessTokenExpirationMs()))
+                .signWith(key)
+                .compact();
+    }
+
+    public String generateRefreshToken(String username){
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenExpirationMs()))
                 .signWith(key)
                 .compact();
     }
@@ -34,10 +48,8 @@ public class JwtService {
                     .parseClaimsJws(token)
                     .getBody();
 
-            if(claims.getExpiration().after(new Date())){
-                return claims.getSubject();
-            }
-            return null;
+            return claims.getExpiration().after(new Date()) ? claims.getSubject() : null;
+
         }catch (Exception e){
             return null;
         }
