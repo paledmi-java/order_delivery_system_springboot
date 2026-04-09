@@ -45,14 +45,14 @@ public class MenuController {
 //        return "available-items";
 //    }
 
-    @GetMapping("/app/public/menu/item")
-    public String getItem(@RequestParam int itemId, Model model){
-        ItemResponseDto itemDto = itemService.findItemDtoByItemId(itemId)
-                .orElseThrow(()-> new ItemNotFoundException("Item not found"));
-
-        model.addAttribute("item", itemDto);
-        return "one-item-screen";
-    }
+//    @GetMapping("/app/public/menu/item")
+//    public String getItem(@RequestParam int itemId, Model model){
+//        ItemResponseDto itemDto = itemService.findItemById(itemId)
+//                .orElseThrow(()-> new ItemNotFoundException("Item not found"));
+//
+//        model.addAttribute("item", itemDto);
+//        return "one-item-screen";
+//    }
 
 //    @PostMapping("/app/user/putItemInBasket")
 //    public String putItemInBasket(@RequestParam int itemId, Principal principal, Model model){

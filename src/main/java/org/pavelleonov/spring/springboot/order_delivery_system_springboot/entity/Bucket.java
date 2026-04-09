@@ -27,15 +27,6 @@ public class Bucket {
     @OneToMany(mappedBy = "bucket", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<BucketItem> bucketItems = new ArrayList<>();
 
-    public void addItem(Item item, int quantity){
-        BucketItem bucketItem = new BucketItem();
-        bucketItem.setItem(item);
-        bucketItem.setBucket(this);
-        bucketItem.setQuantity(quantity);
-
-        bucketItems.add(bucketItem);
-    }
-
     public void removeItem(Item item){
         bucketItems.removeIf(bi -> bi.getItem().equals(item));
     }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.LoginRequest;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.RefreshRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.AuthResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientActivateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientCreateDTO;
@@ -60,10 +61,10 @@ public class AuthController {
         return clientDtoMapper.toViewDto(client);
     }
 
-    @GetMapping("/refresh")
+    @PostMapping("/refresh")
     @Operation(summary = "Обновить токены")
-    public AuthResponseDto refreshToken(@RequestParam String refreshToken){
-        String username = jwtService.extractUsernameIfValid(refreshToken);
+    public AuthResponseDto refreshToken(@RequestBody RefreshRequestDto request){
+        String username = jwtService.extractUsernameIfValid(request.getRefreshToken());
         if(username == null){
             throw new ClientNotFoundException("Invalid refresh token");
         }

@@ -78,6 +78,11 @@ public class Client {
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();;
+    private Set<Role> roles = new HashSet<>();
+
+    public void setBucketAndClientToIt(Bucket bucket){
+        this.setBucket(bucket);
+        bucket.setClient(this);
+    }
 
 }

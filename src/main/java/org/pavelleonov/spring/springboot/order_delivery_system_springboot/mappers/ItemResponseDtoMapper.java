@@ -18,7 +18,6 @@ public class ItemResponseDtoMapper {
                 .price(item.getPrice())
                 .mass(item.getMass())
                 .kcal(item.getKcal())
-                .imageUrl(item.getImageUrl())
                 .hasMultiComp(item.isHasMultiComp())
                 .isChangeable(item.isChangeable())
                 .itemDtoId(item.getItemId())

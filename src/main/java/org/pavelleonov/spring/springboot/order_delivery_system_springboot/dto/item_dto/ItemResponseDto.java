@@ -20,7 +20,6 @@ public record ItemResponseDto(
         String description,
         int mass,
         int kcal,
-        String imageUrl,
         boolean hasMultiComp,
         boolean isChangeable
 ) {

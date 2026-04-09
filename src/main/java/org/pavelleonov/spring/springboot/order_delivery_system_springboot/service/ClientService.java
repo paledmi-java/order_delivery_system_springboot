@@ -2,6 +2,7 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.servi
 
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.*;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.admin.ClientUpdateAdminDTO;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Bucket;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Client;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Credentials;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Role;
@@ -143,6 +144,9 @@ public class ClientService {
                 .isActive(true)
                 .build();
 
+        Bucket bucket = new Bucket();
+        client.setBucketAndClientToIt(bucket);
+
         if(client.getRoles() == null){
             client.setRoles(new HashSet<>());
         }
@@ -173,5 +177,10 @@ public class ClientService {
 
         return clientRepository.findAll(specification, pageable)
                 .map(c->clientDtoMapper.toInfoDto(c));
+    }
+
+    public Client getClientByUsername(String username){
+        return clientRepository.findByCredentialsLogin(username)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
     }
 }
