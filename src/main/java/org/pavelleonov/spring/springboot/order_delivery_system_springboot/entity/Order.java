@@ -6,6 +6,9 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.conver
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 @Setter
@@ -30,41 +33,45 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private OrderStatus status;
+    private OrderStatus status = OrderStatus.DELIVERED;
 
     @Column(name = "commentary")
     private String commentary;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "delivered_at")
-    private LocalDateTime deliveredAt;
-
-    @Column(name = "estimated_delivery_time")
-    @Convert(converter = DurationConverter.class)
-    private Duration estimatedDeliveryTime;
+    @Column(name = "delivered_at", updatable = false)
+    private LocalDateTime deliveredAt = LocalDateTime.now()
+            .plusMinutes(30 + (int)(Math.random() * 60));
 
     @Column(name = "are_bonuses_used")
     private boolean areBonusesUsed;
-
-    @Column(name = "is_promo_code_used")
-    private boolean isPromoCodeUsed;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
     @OneToOne
-
     @JoinColumn(name = "client_address_id")
     private ClientAddress orderAddress;
+
+    @OneToMany(mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     public enum OrderStatus{
         ACTIVE,
         DECLINED,
         DELIVERED,
         UNPAID
+    }
+
+    public void addOrderItemToOrder(OrderItem orderItem){
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
     }
 
 }

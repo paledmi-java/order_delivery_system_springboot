@@ -38,9 +38,6 @@ public class ClientAddress {
     @Column(name = "postal_code")
     private String postal_code;
 
-    @Column(name = "calculated_delivery_time")
-    private LocalDateTime calcDeliveryTime;
-
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;

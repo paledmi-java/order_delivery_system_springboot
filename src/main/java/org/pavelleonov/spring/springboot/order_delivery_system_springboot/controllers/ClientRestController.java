@@ -8,10 +8,17 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.cl
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientPasswordUpdateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientUpdateSelfDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientViewDTO;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressRequestDto;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressResponseDto;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.CreateOrderRequestDto;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.OrderResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Bucket;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.BucketItem;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Client;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.ClientAddress;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.BucketItemDtoMapper;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.BucketItemOrderItemMapper;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientAddressDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.CustomUserDetails;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.BucketService;
@@ -36,6 +43,7 @@ public class ClientRestController {
     private final BucketService bucketService;
     private final ItemService itemService;
     private final BucketItemDtoMapper bucketItemDtoMapper;
+    private final ClientAddressDtoMapper clientAddressDtoMapper;
 
     @GetMapping("/me")
     @Operation(summary = "Домашняя страницу пользователя")
@@ -86,14 +94,33 @@ public class ClientRestController {
                 (userDetails.getClient(), itemService.findItemById(itemId), quantity));
     }
 
-    @PostMapping("/me/bucket/remove")
+    @PatchMapping("/me/bucket/remove/{itemId}")
     @Operation(summary = "Удалить товар из корзины")
-    public BucketItemDto removeBucketItem(@RequestParam int itemId,
-                                       @RequestParam int quantity,
+    public void removeBucketItem(@PathVariable int itemId,
                                        @AuthenticationPrincipal
                                        CustomUserDetails userDetails){
-        return bucketItemDtoMapper.map(bucketService.removeItemFromBucket
-                (userDetails.getClient(), itemService.findItemById(itemId), quantity));
+     bucketService.removeItemFromBucket
+                (userDetails.getClient(), itemId);
     }
 
+
+    // ИСПРАВИТЬ РЕКУРСИЮ
+    @PostMapping("/me/bucket/order")
+    @Operation(summary = "Сделать заказ")
+    public OrderResponseDto makeAnOrder(@AuthenticationPrincipal
+                                            CustomUserDetails userDetails,
+                                        @RequestBody CreateOrderRequestDto dto){
+
+        return bucketService.makeAnOrder(userDetails.getClient(), dto);
+    }
+
+    @PostMapping("/me/settings/addresses")
+    @Operation(summary = "Добавить новый адрес доставки")
+    public ClientAddressResponseDto addNewAddress(@AuthenticationPrincipal
+                                           CustomUserDetails userDetails,
+                                                  ClientAddressRequestDto dto){
+        return clientAddressDtoMapper
+                .mapClientAddressToResponse
+                        (clientService.addNewAddress(userDetails.getClient(), dto));
+    }
 }

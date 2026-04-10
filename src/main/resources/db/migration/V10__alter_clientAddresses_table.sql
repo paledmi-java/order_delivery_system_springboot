@@ -1,0 +1,2 @@
+ALTER TABLE client_addresses
+DROP COLUMN calculated_delivery_time;

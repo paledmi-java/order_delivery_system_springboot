@@ -56,7 +56,7 @@ public class Client {
     @JoinColumn(name = "credentials_id")
     private Credentials credentials;
 
-    @OneToMany(mappedBy = "client", cascade = {CascadeType.PERSIST, CascadeType.MERGE}
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL
             , orphanRemoval = true, fetch = FetchType.LAZY)
     private final List<ClientAddress> clientAddresses = new ArrayList<>();
 
@@ -83,6 +83,11 @@ public class Client {
     public void setBucketAndClientToIt(Bucket bucket){
         this.setBucket(bucket);
         bucket.setClient(this);
+    }
+
+    public void addOrderToClient(Order order){
+        completeOrders.add(order);
+        order.setClient(this);
     }
 
 }
