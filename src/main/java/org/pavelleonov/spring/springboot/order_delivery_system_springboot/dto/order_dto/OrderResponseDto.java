@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.converters.DurationConverter;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Client;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.ClientAddress;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Order;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.OrderItem;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.item_dto.ItemResponseDto;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -24,6 +22,5 @@ public class OrderResponseDto {
     private LocalDateTime createdAt; //
     private LocalDateTime deliveredAt; //
     private boolean areBonusesUsed; //
-    private List<OrderItem> orderItems; //
-    private ClientAddress orderAddress; //
+    private List<OrderItemResponseDto> orderItems; ////
 }

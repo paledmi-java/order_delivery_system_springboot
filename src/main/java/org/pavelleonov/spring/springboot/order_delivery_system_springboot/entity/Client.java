@@ -90,4 +90,9 @@ public class Client {
         order.setClient(this);
     }
 
+    public void addCredentialsToClient(Credentials credentials){
+        this.setCredentials(credentials);
+        credentials.setClient(this);
+    }
+
 }

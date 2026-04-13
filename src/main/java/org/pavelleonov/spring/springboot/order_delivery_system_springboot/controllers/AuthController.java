@@ -8,7 +8,7 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.Re
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.AuthResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientActivateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientCreateDTO;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientViewDTO;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Client;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
@@ -49,16 +49,14 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Зарегистрировать нового пользователя")
-    public ClientViewDTO register(@Valid @RequestBody ClientCreateDTO dto){
-        Client client = clientService.saveClient(dto);
-        return clientDtoMapper.toViewDto(client);
+    public ClientResponseDto register(@Valid @RequestBody ClientCreateDTO dto){
+        return clientService.saveClient(dto);
     }
 
     @PatchMapping("/activate")
     @Operation(summary = "Активировать аккаунт деактивированного пользователя")
-    public ClientViewDTO activateAccount(@RequestBody ClientActivateDTO dto){
-        Client client = clientService.activateAccount(dto);
-        return clientDtoMapper.toViewDto(client);
+    public ClientResponseDto activateAccount(@RequestBody ClientActivateDTO dto){
+        return clientService.activateAccount(dto);
     }
 
     @PostMapping("/refresh")

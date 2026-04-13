@@ -114,7 +114,7 @@ public class MenuController {
 //        Client client = clientService.findByCredentialsLogin(principal.getName())
 //                .orElseThrow(() -> new ClientNotFoundException("Client not found"));;
 //
-//        ClientViewDTO clientViewDTO = ClientViewDTO.builder()
+//        ClientResponseDto clientViewDTO = ClientResponseDto.builder()
 //                .name(client.getName())
 //                .login(client.getLogin())
 //                .build();

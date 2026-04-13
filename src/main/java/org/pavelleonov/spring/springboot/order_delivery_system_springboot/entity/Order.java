@@ -33,7 +33,7 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private OrderStatus status = OrderStatus.DELIVERED;
+    private OrderStatus status = OrderStatus.ACTIVE;
 
     @Column(name = "commentary")
     private String commentary;

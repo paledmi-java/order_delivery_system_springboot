@@ -2,13 +2,12 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappe
 
 import lombok.RequiredArgsConstructor;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.bucket_item_dto.BucketItemDto;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.item_dto.ItemResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.BucketItem;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BucketItemDtoMapper {
+public class BucketItemMapper {
 
     private final ItemResponseDtoMapper itemResponseDtoMapper;
 

@@ -3,17 +3,17 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.servi
 import lombok.RequiredArgsConstructor;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.*;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressRequestDto;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.admin.ClientUpdateAdminDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.*;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.InvalidPasswordException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.RoleNotFoundException;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientAddressRepository;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientAddressMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.filters.ClientFilter;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.RoleRepository;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.CustomUserDetails;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.specifications.ClientSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,90 +23,78 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ClientService {
 
-    private final ClientRepository clientRepository;
+
     private final PasswordEncoder passwordEncoder;
-    private final ClientDtoMapper clientDtoMapper;
+
+    private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;
-    private final ClientAddressRepository clientAddressRepository;
+
+    private final ClientDtoMapper clientDtoMapper;
+    private final ClientAddressMapper clientAddressMapper;
+
+
 
     @Transactional
-    public Client findClient(Integer clientId) {
-        Client client = null;
-        Optional<Client> optional = clientRepository.findById(clientId);
-        if(optional.isPresent()){
-            client = optional.get();
-        }
-        return client;
+    public Client findClientById(int id){
+        return clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
     }
 
     @Transactional
-    public Client deactivateAccount(Client client) {
+    public ClientResponseDto getUser(int id){
+        Client client = findClientById(id);
+        return clientDtoMapper.toResponseDto(client);
+    }
+
+    @Transactional
+    public void deactivateAccount(int id) {
+        Client client = findClientById(id);
         client.setActive(false);
         clientRepository.save(client);
-        return client;
     }
 
     @Transactional
-    public Client activateAccount(ClientActivateDTO dto) {
-        Client client = clientRepository.findByCredentialsLogin(dto.getLogin())
-                .orElseThrow(()-> new ClientNotFoundException("Client not found"));
-        client.setActive(true);
-        clientRepository.save(client);
-        return client;
-    }
+    public Client updateBaseFields(int id, BasicClientUpdateDTO dto){
 
-    @Transactional
-    public Client activateAccountAsAdmin(int id) {
-        Client client = clientRepository.findById(id)
-                .orElseThrow(()-> new ClientNotFoundException("Client not found"));
-        client.setActive(true);
-        clientRepository.save(client);
-        return client;
-    }
+        Client client = findClientById(id);
 
-
-    @Transactional
-    public Client updateBaseFields(Client client, BasicClientUpdateDTO dto){
         if(dto.getName() != null) client.setName(dto.getName());
         if(dto.getEmail() != null) client.setEmail(dto.getEmail());
         if(dto.getDateOfBirth() != null) client.setDateOfBirth(dto.getDateOfBirth());
         if(dto.getPhoneNumber() != null) client.setPhoneNumber(dto.getPhoneNumber());
         if(dto.getIsAdvertisable() != null) client.setAdvertisable(dto.getIsAdvertisable());
         if(dto.getIsOnlineCheckOn() !=null) client.setOnlineCheckOn(dto.getIsOnlineCheckOn());
+
         return client;
     }
 
 
+    // CLIENT
     @Transactional
-    public Client updateClientSelf(CustomUserDetails userDetails, ClientUpdateSelfDTO dto) {
-        Client client = userDetails.getClient();
-        updateBaseFields(client, dto);
-        clientRepository.save(client);
-        return client;
-    }
-
-    @Transactional
-    public Client updateClientByAdmin(int id, ClientUpdateAdminDTO dto){
-        Client client = clientRepository.findById(id)
+    public ClientResponseDto activateAccount(ClientActivateDTO dto) {
+        Client client = clientRepository.findByCredentialsLogin(dto.getLogin())
                 .orElseThrow(()-> new ClientNotFoundException("Client not found"));
-        updateBaseFields(client, dto);
 
-        if(dto.getIsActive() != null) client.setActive(dto.getIsActive());
-        if(dto.getIsProfileComplete() != null) client.setProfileComplete(dto.getIsProfileComplete());
-        if(dto.getBonusesAmount() != null) client.setBonusesAmount(dto.getBonusesAmount());
-        clientRepository.save(client);
-        return client;
+        client.setActive(true);
+        return clientDtoMapper.toResponseDto(clientRepository.save(client));
     }
 
     @Transactional
-    public void changePasswordSelf(CustomUserDetails userDetails, ClientPasswordUpdateDTO dto) {
-        Client client = userDetails.getClient();
+    public ClientResponseDto updateClientSelf(int id, ClientUpdateSelfDTO dto) {
+        Client client = updateBaseFields(id, dto);
+        clientRepository.save(client);
+        return clientDtoMapper.toResponseDto(client);
+    }
+
+    @Transactional
+    public void changePasswordSelf(int id, ClientPasswordUpdateDTO dto) {
+        Client client = findClientById(id);
         Credentials credentials = client.getCredentials();
 
         if(!passwordEncoder.matches(dto.getOldPassword(), credentials.getHashedPassword())){
@@ -114,23 +102,12 @@ public class ClientService {
         }
 
         credentials.setHashedPassword(passwordEncoder.encode(dto.getNewPassword()));
-        client.setCredentials(credentials);
+        client.addCredentialsToClient(credentials);
         clientRepository.save(client);
     }
 
     @Transactional
-    public Client changePasswordAsAdmin(int id, ClientAdminPasswordUpdateDTO dto) {
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
-        Credentials credentials = client.getCredentials();
-
-        credentials.setHashedPassword(passwordEncoder.encode(dto.getNewPassword()));
-        client.setCredentials(credentials);
-        return clientRepository.save(client);
-    }
-
-    @Transactional
-    public Client saveClient(ClientCreateDTO clientCreateDTO) {
+    public ClientResponseDto saveClient(ClientCreateDTO clientCreateDTO) {
 
         String hashedPassword = passwordEncoder.encode(clientCreateDTO.getPassword());
 
@@ -146,9 +123,10 @@ public class ClientService {
                 .name(clientCreateDTO.getName())
                 .phoneNumber(clientCreateDTO.getPhoneNumber())
                 .email(clientCreateDTO.getEmail())
-                .credentials(credentials)
                 .isActive(true)
                 .build();
+
+        client.addCredentialsToClient(credentials);
 
         Bucket bucket = new Bucket();
         client.setBucketAndClientToIt(bucket);
@@ -158,44 +136,33 @@ public class ClientService {
         }
         client.getRoles().add(userRole);
 
-        return clientRepository.save(client);
+        return clientDtoMapper.toResponseDto(clientRepository.save(client));
     }
 
     @Transactional
-    public Page<ClientInfoDTO> searchClients(ClientFilter clientFilter, Pageable pageable) {
+    public Page<ClientResponseDto> searchClients(ClientFilter clientFilter, Pageable pageable) {
         Specification<Client> specification =
                 (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
-        if(clientFilter.getName() != null){
+        if(clientFilter.getName() != null)
             specification = specification.and(ClientSpecification.hasName(clientFilter.getName()));
-        }
 
-        if(clientFilter.getEmail() != null){
+        if(clientFilter.getEmail() != null)
             specification = specification.and(ClientSpecification.hasEmail(clientFilter.getEmail()));
-        }
 
-        if(clientFilter.getPhone() != null){
+        if(clientFilter.getPhone() != null)
             specification = specification.and(ClientSpecification.hasPhone(clientFilter.getPhone()));
-        }
 
-        if (clientFilter.getIsActive() != null){
+        if (clientFilter.getIsActive() != null)
             specification = specification.and(ClientSpecification.hasIsActive(clientFilter.getIsActive()));
-        }
 
         return clientRepository.findAll(specification, pageable)
-                .map(c->clientDtoMapper.toInfoDto(c));
+                .map(clientDtoMapper::toResponseDto);
     }
 
     @Transactional
-    public Client getClientByUsername(String username){
-        return clientRepository.findByCredentialsLogin(username)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
-    }
-
-    @Transactional
-    public ClientAddress addNewAddress(Client clientDto, ClientAddressRequestDto dto){
-        Client client = clientRepository.findByCredentialsLogin(clientDto.getCredentials().getLogin())
-                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+    public ClientAddressResponseDto addNewAddress(int id, ClientAddressRequestDto dto){
+        Client client = findClientById(id);
 
         ClientAddress clientAddress = ClientAddress
                 .builder()
@@ -211,6 +178,48 @@ public class ClientService {
         client.getClientAddresses().add(clientAddress);
         clientRepository.save(client);
 
-        return clientAddress;
+        return clientAddressMapper.toResponseDto(clientAddress);
+    }
+
+
+    @Transactional
+    public List<ClientAddressResponseDto> getAddresses(int id){
+        Client client = findClientById(id);
+
+        return client.getClientAddresses().stream()
+                .map(clientAddressMapper::toResponseDto)
+                .toList();
+    }
+
+
+    //ADMIN
+
+    @Transactional
+    public ClientResponseDto updateClientByAdmin(int id, ClientUpdateAdminDTO dto){
+
+        Client client = updateBaseFields(id, dto);
+
+        if(dto.getIsActive() != null) client.setActive(dto.getIsActive());
+        if(dto.getIsProfileComplete() != null) client.setProfileComplete(dto.getIsProfileComplete());
+        if(dto.getBonusesAmount() != null) client.setBonusesAmount(dto.getBonusesAmount());
+        clientRepository.save(client);
+        return clientDtoMapper.toResponseDto(client);
+    }
+
+    @Transactional
+    public ClientResponseDto activateClientAccountAsAdmin(int id) {
+        Client client = findClientById(id);
+        client.setActive(true);
+        return clientDtoMapper.toResponseDto(clientRepository.save(client));
+    }
+
+    @Transactional
+    public ClientResponseDto changeClientPasswordAsAdmin(int id, ClientAdminPasswordUpdateDTO dto) {
+        Client client = findClientById(id);
+        Credentials credentials = client.getCredentials();
+
+        credentials.setHashedPassword(passwordEncoder.encode(dto.getNewPassword()));
+        client.addCredentialsToClient(credentials);
+        return clientDtoMapper.toResponseDto(clientRepository.save(client));
     }
 }
