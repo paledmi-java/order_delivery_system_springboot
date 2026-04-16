@@ -1,17 +1,21 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service;
 
 import lombok.RequiredArgsConstructor;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.PagedResponseDto;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.ChangeOrderStatusRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.CreateOrderRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.OrderResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.*;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientAddressIsInvalid;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientNotFoundException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.OrderNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.OrderItemMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.OrderMapper;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.PageMapper;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientAddressRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.OrderRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,43 +27,46 @@ public class OrderService {
 
     private final ClientRepository clientRepository;
     private final OrderRepository orderRepository;
+
     private final OrderItemMapper orderItemMapper;
     private final OrderMapper orderMapper;
+    private final PageMapper pageMapper;
+    private final ClientAddressRepository clientAddressRepository;
+
+    @Transactional
+    public Client findClientById(int id){
+        return clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+    }
 
 
     @Transactional
-    public OrderResponseDto makeAnOrder(Client clientDto, CreateOrderRequestDto dto) {
+    public OrderResponseDto makeAnOrder(int id, CreateOrderRequestDto dto) {
 
-        Client client = clientRepository.findByCredentialsLogin(clientDto.getCredentials().getLogin())
-                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
-
+        Client client = findClientById(id);
         Bucket bucket = client.getBucket();
-        List<Item> items = bucket.getBucketItems()
-                .stream().map(bi -> bi.getItem())
-                .toList();
 
-        ClientAddress clientAddress =
-                client.getClientAddresses().stream()
-                        .filter(ca-> ca.getId() == dto.getClientAddressId())
-                        .findFirst().orElseThrow(() ->
-                                new ClientAddressIsInvalid("Client address is invalid"));
+        // решить проблемы N+1
+        List<BucketItem> bucketItems = bucket.getBucketItems();
 
         // Создание нового адреса
+        ClientAddress clientAddress =
+                clientAddressRepository.findByClientAndIsDefault(client, true);
 
         Order order = new Order();
 
-        List<OrderItem> orderItems = bucket.getBucketItems()
+        List<OrderItem> orderItems = bucketItems
                 .stream().map(orderItemMapper::mapBucketItemtoOrderItem)
                 .toList();
 
         // SET ORDER ITEMS
         orderItems.forEach(order::addOrderItemToOrder);
 
-        // SET ADDRESS ДОБАВИТЬ СОЗДАНИЕ НОВОГО АДРЕСА
+        // SET ADDRESS
         order.setOrderAddress(clientAddress);
 
         String commentary = dto.getCommentary();
-        boolean areBonusesUsed = dto.isAreBonusesUsed();
+        boolean areBonusesUsed = dto.getAreBonusesUsed();
         if(commentary == null){
             commentary = "";
         }
@@ -69,8 +76,8 @@ public class OrderService {
         // SET ARE BONUSES USED
         order.setAreBonusesUsed(areBonusesUsed);
 
-        int price = items.stream()
-                .map(item -> item.getPrice())
+        int price = bucketItems.stream()
+                .map(item -> item.getItem().getPrice())
                 .mapToInt(i -> i.intValue())
                 .sum();
 
@@ -85,6 +92,7 @@ public class OrderService {
         int clientBonuses = client.getBonusesAmount();
         if (areBonusesUsed && price > clientBonuses) {
             price = price - clientBonuses;
+            client.setBonusesAmount(0);
         } else if (areBonusesUsed) {
             client.setBonusesAmount(clientBonuses-price);
             price = 0;
@@ -98,14 +106,16 @@ public class OrderService {
 
         orderRepository.save(order);
         client.getBucket().getBucketItems().clear();
-        clientRepository.save(client);
 
         return orderMapper.mapOrderToResponseDto(order);
     }
 
+
+
+
     @Transactional
-    public List<OrderResponseDto> getOrders(Client clientDto){
-        Client client = clientRepository.findById(clientDto.getClientId())
+    public List<OrderResponseDto> getOrders(int id){
+        Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
         return client.getCompleteOrders()
@@ -114,8 +124,21 @@ public class OrderService {
     }
 
     @Transactional
-    public Page<OrderResponseDto> getAllOrders(int page, int size){
-        return orderRepository.findAll(PageRequest.of(page, size))
+    public PagedResponseDto<OrderResponseDto> getAllOrders(Pageable pageable){
+        Page<OrderResponseDto> dtos = orderRepository.findAll(pageable)
                 .map(orderMapper::mapOrderToResponseDto);
+
+        return pageMapper.toPagedResponse(dtos);
     }
+
+    @Transactional
+    public OrderResponseDto changeOrderStatus(int id, ChangeOrderStatusRequestDto dto){
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new OrderNotFoundException("Order not found"));
+        order.setStatus(dto.getStatus());
+        orderRepository.save(order);
+        return orderMapper.mapOrderToResponseDto(order);
+    }
+
+
 }

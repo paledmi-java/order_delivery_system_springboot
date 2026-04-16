@@ -2,10 +2,13 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.contr
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.PagedResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientAdminPasswordUpdateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.admin.ClientUpdateAdminDTO;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.ChangeOrderStatusRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.OrderResponseDto;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Order;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.filters.ClientFilter;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.ClientService;
@@ -43,7 +46,7 @@ public class AdminRestController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
     @Operation(summary = "Получить список клиентов")
-    public Page<ClientResponseDto> findUsers(ClientFilter filter, Pageable pageable) {
+    public PagedResponseDto<ClientResponseDto> findUsers(ClientFilter filter, Pageable pageable) {
         return clientService.searchClients(filter, pageable);
     }
 
@@ -73,10 +76,16 @@ public class AdminRestController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/orders")
     @Operation(summary = "Посмотреть заказы")
-    public Page<OrderResponseDto> getOrders(@RequestParam int page,
-                                            @RequestParam int size){
-        return orderService.getAllOrders(page, size);
+    public PagedResponseDto<OrderResponseDto> getOrders(Pageable pageable){
+        return orderService.getAllOrders(pageable);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/orders/{id}/status")
+    @Operation(summary = "Изменить статус заказа")
+    public OrderResponseDto changeOrderStatus(@PathVariable int id,
+                                               @RequestBody ChangeOrderStatusRequestDto dto){
+        return orderService.changeOrderStatus(id, dto);
+    }
 
 }

@@ -1,15 +1,20 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service;
 
 import lombok.RequiredArgsConstructor;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.PagedResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.*;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.admin.ClientUpdateAdminDTO;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.ChangeOrderStatusRequestDto;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.OrderResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.*;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientAccountIsInactiveException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.InvalidPasswordException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.RoleNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientAddressMapper;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.PageMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.filters.ClientFilter;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
@@ -37,8 +42,14 @@ public class ClientService {
 
     private final ClientDtoMapper clientDtoMapper;
     private final ClientAddressMapper clientAddressMapper;
+    private final PageMapper pageMapper;
 
 
+    private void ensureClientIsActive(Client client){
+        if (!client.isActive()){
+            throw new ClientAccountIsInactiveException("Client account is inactive");
+        }
+    }
 
     @Transactional
     public Client findClientById(int id){
@@ -56,9 +67,10 @@ public class ClientService {
     public void deactivateAccount(int id) {
         Client client = findClientById(id);
         client.setActive(false);
-        clientRepository.save(client);
     }
 
+
+    // Поменять на mapStruct
     @Transactional
     public Client updateBaseFields(int id, BasicClientUpdateDTO dto){
 
@@ -101,9 +113,12 @@ public class ClientService {
             throw new InvalidPasswordException("Old password is incorrect");
         }
 
+        if(passwordEncoder.matches(dto.getNewPassword(), credentials.getHashedPassword())){
+            throw new InvalidPasswordException("New password cant be same as new one");
+        }
+
+//        client.addCredentialsToClient(credentials);
         credentials.setHashedPassword(passwordEncoder.encode(dto.getNewPassword()));
-        client.addCredentialsToClient(credentials);
-        clientRepository.save(client);
     }
 
     @Transactional
@@ -140,7 +155,7 @@ public class ClientService {
     }
 
     @Transactional
-    public Page<ClientResponseDto> searchClients(ClientFilter clientFilter, Pageable pageable) {
+    public PagedResponseDto<ClientResponseDto> searchClients(ClientFilter clientFilter, Pageable pageable) {
         Specification<Client> specification =
                 (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
@@ -156,8 +171,10 @@ public class ClientService {
         if (clientFilter.getIsActive() != null)
             specification = specification.and(ClientSpecification.hasIsActive(clientFilter.getIsActive()));
 
-        return clientRepository.findAll(specification, pageable)
+        Page<ClientResponseDto> dtos =  clientRepository.findAll(specification, pageable)
                 .map(clientDtoMapper::toResponseDto);
+
+        return pageMapper.toPagedResponse(dtos);
     }
 
     @Transactional
@@ -176,7 +193,6 @@ public class ClientService {
                 .build();
 
         client.getClientAddresses().add(clientAddress);
-        clientRepository.save(client);
 
         return clientAddressMapper.toResponseDto(clientAddress);
     }

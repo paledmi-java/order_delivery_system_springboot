@@ -1,11 +1,24 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
 public class CreateOrderRequestDto {
-    int bucketId;
-    int clientAddressId;
+
+    @Min(1)
+    @NotNull
+    Integer bucketId;
+
+    @Min(1)
+    @NotNull
+    Integer clientAddressId;
+
+    @Size(max = 1000)
     String commentary;
-    boolean areBonusesUsed;
+
+    @NotNull
+    Boolean areBonusesUsed;
 }

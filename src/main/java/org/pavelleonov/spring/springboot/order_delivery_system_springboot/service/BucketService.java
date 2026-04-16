@@ -3,15 +3,18 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.servi
 
 import lombok.RequiredArgsConstructor;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.bucket_item_dto.BucketItemDto;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.bucket_item_dto.RemoveItemToBucketRequestDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.*;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.BucketItemNotFoundException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientAccountIsInactiveException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ItemNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.BucketItemMapper;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.OrderItemMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -26,8 +29,15 @@ public class BucketService {
 
     private final BucketItemMapper bucketItemDtoMapper;
 
+
+    private void ensureClientIsActive(Client client) {
+        if (!client.isActive()) {
+            throw new ClientAccountIsInactiveException("Client account is inactive");
+        }
+    }
+
     @Transactional
-    public Client findClientById(int clientId){
+    public Client findClientById(int clientId) {
         return clientRepository.findById(clientId)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
     }
@@ -54,7 +64,9 @@ public class BucketService {
 
         Client clientDb = findClientById(clientId);
 
-        Item dbItem = itemRepository.findByItemId(itemId)
+        ensureClientIsActive(clientDb);
+
+        Item dbItem = itemRepository.findByItemIdAndIsAvailableTrue(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Item not found"));
 
         Bucket bucket = clientDb.getBucket();
@@ -64,32 +76,42 @@ public class BucketService {
             clientDb.setBucketAndClientToIt(bucket);
         }
 
-        BucketItemId bucketItemId = new BucketItemId();
-        bucketItemId.setBucketId(bucket.getId());
-        bucketItemId.setItemId(dbItem.getItemId());
+        Bucket finalBucket = bucket;
+        System.out.println("Bucket ID = " + finalBucket.getId());
 
-        BucketItem bucketItem = BucketItem.builder()
-                .id(bucketItemId)
-                .item(dbItem)
-                .bucket(bucket)
-                .quantity(quantity)
-                .build();
+        BucketItem bucketItem = bucketItemRepository
+                .findBucketItemByBucketAndItem(finalBucket, dbItem)
+                .orElseGet(() ->
+                        BucketItem.builder()
+                                .id(new BucketItemId())
+                                .item(dbItem)
+                                .bucket(finalBucket)
+                                .quantity(0)
+                                .build());
 
-        bucketItemRepository.save(bucketItem);
+        bucketItem.setQuantity(quantity);
 
-        bucket.getBucketItems().add(bucketItem);
-
-        bucketRepository.save(bucket);
+        finalBucket.getBucketItems().add(bucketItem);
 
         return bucketItemDtoMapper.map(bucketItem);
     }
 
     @Transactional
-    public void removeItemFromBucket(int id, int itemId) {
+    public void removeItemFromBucket(int id, RemoveItemToBucketRequestDTO dto) {
+
         Client client = findClientById(id);
         Bucket bucket = client.getBucket();
-        bucket.getBucketItems().removeIf
-                (bucketItem -> bucketItem.getItem().getItemId().equals(itemId));
-        bucketRepository.save(bucket);
+
+        Item item = itemRepository.findByItemId(dto.getItemId())
+                .orElseThrow(() -> new ItemNotFoundException("Item not found"));
+
+        BucketItem bucketItem = bucketItemRepository.findBucketItemByBucketAndItem(bucket, item)
+                .orElseThrow(() -> new BucketItemNotFoundException("BucketItem not found"));
+
+        if(dto.getQuantity() >= bucketItem.getQuantity()){
+            bucketItemRepository.delete(bucketItem);
+        } else {
+            bucketItem.setQuantity(bucketItem.getQuantity() - dto.getQuantity());
+        }
     }
 }

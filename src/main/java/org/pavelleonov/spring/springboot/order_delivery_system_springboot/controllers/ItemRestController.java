@@ -2,10 +2,13 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.contr
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.PagedResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.item_dto.ItemResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ItemResponseDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.ItemService;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,9 +25,8 @@ public class ItemRestController {
 
     @GetMapping("/api/public/items")
     @Operation(summary = "Получить список доступных товаров")
-    public Page<ItemResponseDto> getAllItems(@RequestParam int page,
-                                             @RequestParam int size) {
-        return itemService.findByIsAvailableTrue(page, size);
+    public PagedResponseDto<ItemResponseDto> getAllItems(@ParameterObject Pageable pageable) {
+        return itemService.findByIsAvailableTrue(pageable);
     }
 
     @GetMapping("/api/public/items/{itemDtoId}")

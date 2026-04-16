@@ -9,14 +9,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 
 @Entity
 @Table(name = "bucket_items")
 public class BucketItem {
 
     @EmbeddedId
-    @EqualsAndHashCode.Include
     private BucketItemId id;
 
     @ManyToOne

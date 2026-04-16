@@ -27,7 +27,6 @@ public class AuthController {
 
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final ClientDtoMapper clientDtoMapper;
     private final ClientService clientService;
 
     @PostMapping("/login")

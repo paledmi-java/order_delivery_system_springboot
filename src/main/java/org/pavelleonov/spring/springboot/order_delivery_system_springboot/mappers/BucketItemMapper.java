@@ -16,7 +16,7 @@ public class BucketItemMapper {
             throw new RuntimeException("BucketItem is null");
         }
 
-        return new BucketItemDto(itemResponseDtoMapper.map(bucketItem.getItem()),
+        return new BucketItemDto(itemResponseDtoMapper.toDto(bucketItem.getItem()),
                 bucketItem.getQuantity());
     }
 }

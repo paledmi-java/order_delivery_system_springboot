@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
-    Page<Item> findByIsAvailableTrue(Pageable pageable);
+    Page<Item> findPageByIsAvailableTrue(Pageable pageable);
+    Optional<Item> findByItemIdAndIsAvailableTrue(int id);
     Optional<Item> findByItemId(int id);
 }

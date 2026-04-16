@@ -24,6 +24,7 @@ public class Bucket {
     @OneToOne(mappedBy = "bucket")
     private Client client;
 
+
     @OneToMany(mappedBy = "bucket", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<BucketItem> bucketItems = new ArrayList<>();
 

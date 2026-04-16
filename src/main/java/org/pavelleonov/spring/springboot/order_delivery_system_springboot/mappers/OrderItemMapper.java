@@ -27,7 +27,7 @@ public class OrderItemMapper {
         return OrderItemResponseDto.builder()
                 .priceSnapshot(orderItem.getPriceSnapshot())
                 .quantity(orderItem.getQuantity())
-                .itemResponseDto(itemResponseDtoMapper.map(orderItem.getItem()))
+                .itemResponseDto(itemResponseDtoMapper.toDto(orderItem.getItem()))
                 .build();
     }
 }
