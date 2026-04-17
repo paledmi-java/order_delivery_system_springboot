@@ -1,6 +1,7 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.PagedResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientAdminPasswordUpdateDTO;
@@ -13,6 +14,7 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.securi
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.ClientService;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.OrderService;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +40,7 @@ public class AdminRestController {
     @PatchMapping("/{id}")
     @Operation(summary = "Обновить клиента")
     public ClientResponseDto updateUser(@PathVariable int id,
-                                        @RequestBody ClientUpdateAdminDTO dto) {
+                                        @Valid @RequestBody ClientUpdateAdminDTO dto) {
 
         return clientService.updateClientByAdmin(id, dto);
     }
@@ -46,7 +48,8 @@ public class AdminRestController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
     @Operation(summary = "Получить список клиентов")
-    public PagedResponseDto<ClientResponseDto> findUsers(ClientFilter filter, Pageable pageable) {
+    public PagedResponseDto<ClientResponseDto> findUsers(ClientFilter filter,
+                                                         @ParameterObject Pageable pageable) {
         return clientService.searchClients(filter, pageable);
     }
 
@@ -69,14 +72,14 @@ public class AdminRestController {
     @PostMapping("/{id}/password")
     @Operation(summary = "Изменить пароль клиента")
     public ClientResponseDto updateClientPassword(@PathVariable int id,
-                                                  @RequestBody ClientAdminPasswordUpdateDTO dto){
+                                                  @Valid @RequestBody ClientAdminPasswordUpdateDTO dto){
         return clientService.changeClientPasswordAsAdmin(id, dto);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/orders")
     @Operation(summary = "Посмотреть заказы")
-    public PagedResponseDto<OrderResponseDto> getOrders(Pageable pageable){
+    public PagedResponseDto<OrderResponseDto> getOrders(@ParameterObject Pageable pageable){
         return orderService.getAllOrders(pageable);
     }
 
@@ -84,7 +87,7 @@ public class AdminRestController {
     @PatchMapping("/orders/{id}/status")
     @Operation(summary = "Изменить статус заказа")
     public OrderResponseDto changeOrderStatus(@PathVariable int id,
-                                               @RequestBody ChangeOrderStatusRequestDto dto){
+                                               @Valid @RequestBody ChangeOrderStatusRequestDto dto){
         return orderService.changeOrderStatus(id, dto);
     }
 

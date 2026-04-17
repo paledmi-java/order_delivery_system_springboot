@@ -3,8 +3,6 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.contr
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientCreateDTO;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.item_dto.ItemResponseDto;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ItemNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.BucketService;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.ClientService;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.ItemService;
@@ -14,7 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class MenuController {

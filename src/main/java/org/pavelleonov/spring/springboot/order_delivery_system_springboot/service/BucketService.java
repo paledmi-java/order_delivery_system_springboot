@@ -5,16 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.bucket_item_dto.BucketItemDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.bucket_item_dto.RemoveItemToBucketRequestDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.*;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.BucketItemNotFoundException;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientAccountIsInactiveException;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientNotFoundException;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ItemNotFoundException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.BucketItemNotFoundException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ClientAccountIsInactiveException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ClientNotFoundException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ItemNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.BucketItemMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
 import java.util.List;
 
 @Service

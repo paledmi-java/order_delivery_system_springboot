@@ -6,8 +6,8 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.or
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.CreateOrderRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.OrderResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.*;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientNotFoundException;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.OrderNotFoundException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ClientNotFoundException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.OrderNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.OrderItemMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.OrderMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.PageMapper;
@@ -110,14 +110,9 @@ public class OrderService {
         return orderMapper.mapOrderToResponseDto(order);
     }
 
-
-
-
     @Transactional
     public List<OrderResponseDto> getOrders(int id){
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
-
+        Client client = findClientById(id);
         return client.getCompleteOrders()
                 .stream().map(orderMapper::mapOrderToResponseDto)
                 .toList();

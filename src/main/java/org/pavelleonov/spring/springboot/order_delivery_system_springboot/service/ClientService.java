@@ -6,15 +6,14 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.cl
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.admin.ClientUpdateAdminDTO;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.ChangeOrderStatusRequestDto;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.OrderResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.*;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientAccountIsInactiveException;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.ClientNotFoundException;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.InvalidPasswordException;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exceptions.RoleNotFoundException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ClientAddressIsInvalid;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ClientNotFoundException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.InvalidPasswordException;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.RoleNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientAddressMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.PageMapper;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientAddressRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.filters.ClientFilter;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
@@ -34,22 +33,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClientService {
 
-
     private final PasswordEncoder passwordEncoder;
 
     private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;
+    private final ClientAddressRepository clientAddressRepository;
 
     private final ClientDtoMapper clientDtoMapper;
     private final ClientAddressMapper clientAddressMapper;
     private final PageMapper pageMapper;
 
 
-    private void ensureClientIsActive(Client client){
-        if (!client.isActive()){
-            throw new ClientAccountIsInactiveException("Client account is inactive");
-        }
-    }
 
     @Transactional
     public Client findClientById(int id){
@@ -188,10 +182,22 @@ public class ClientService {
                 .apartment(dto.apartment())
                 .houseNumber(dto.houseNumber())
                 .street(dto.street())
-                .isDefault(dto.isDefault())
                 .postal_code(dto.postalCode())
                 .build();
 
+        if(dto.isDefault()){
+            ClientAddress clientAddressLastDefault =
+                    client.getClientAddresses().stream().filter(ClientAddress::isDefault)
+                    .findAny().orElseThrow(() -> new ClientAddressIsInvalid("Address not found"));
+
+            clientAddressLastDefault.setDefault(false);
+            clientAddress.setDefault(true);
+
+        } else {
+            clientAddress.setDefault(false);
+        }
+
+        clientAddressRepository.save(clientAddress);
         client.getClientAddresses().add(clientAddress);
 
         return clientAddressMapper.toResponseDto(clientAddress);
@@ -218,8 +224,9 @@ public class ClientService {
         if(dto.getIsActive() != null) client.setActive(dto.getIsActive());
         if(dto.getIsProfileComplete() != null) client.setProfileComplete(dto.getIsProfileComplete());
         if(dto.getBonusesAmount() != null) client.setBonusesAmount(dto.getBonusesAmount());
-        clientRepository.save(client);
-        return clientDtoMapper.toResponseDto(client);
+
+        Client savedClient = clientRepository.save(client);
+        return clientDtoMapper.toResponseDto(savedClient);
     }
 
     @Transactional

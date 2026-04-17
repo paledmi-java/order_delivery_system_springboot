@@ -1,12 +1,11 @@
-package org.pavelleonov.spring.springboot.order_delivery_system_springboot.security;
+package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.JwtProperties;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;

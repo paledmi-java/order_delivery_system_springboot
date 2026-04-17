@@ -16,7 +16,7 @@ public class ClientPasswordUpdateDTO {
 
     @NotNull
     @Size(min = 10, max = 40)
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{10,40}$",
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]$",
             message = "Password must contain at least 1 letter and 1 digit")
     private String newPassword;
 }

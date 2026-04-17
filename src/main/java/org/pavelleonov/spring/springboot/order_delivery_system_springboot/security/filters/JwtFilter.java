@@ -5,7 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.CustomUserDetailService;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.JwtService;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.JwtService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;

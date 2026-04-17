@@ -25,10 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/*
-    GET /api/users/me/orders
- */
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
