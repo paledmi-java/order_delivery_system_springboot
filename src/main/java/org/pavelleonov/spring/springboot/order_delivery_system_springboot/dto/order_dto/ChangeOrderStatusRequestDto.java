@@ -7,7 +7,6 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity
 
 @Getter
 public class ChangeOrderStatusRequestDto {
-
     @NotNull
     private Order.OrderStatus status;
 }

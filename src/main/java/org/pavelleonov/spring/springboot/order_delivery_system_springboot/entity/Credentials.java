@@ -18,10 +18,10 @@ public class Credentials {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "login")
+    @Column(name = "login", nullable = false, unique = true)
     private String login;
 
-    @Column(name = "hashed_password")
+    @Column(name = "hashed_password", nullable = false)
     private String hashedPassword;
 
     @OneToOne(mappedBy = "credentials")

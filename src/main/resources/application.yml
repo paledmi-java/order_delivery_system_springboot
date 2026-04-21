@@ -40,6 +40,8 @@ management:
 logging:
     level:
       org.springframework.security: trace
+      root: INFO
+      org.springframework: WARN
 
 security:
   jwt:

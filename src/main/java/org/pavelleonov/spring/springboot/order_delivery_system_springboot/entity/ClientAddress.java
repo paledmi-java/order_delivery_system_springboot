@@ -20,22 +20,22 @@ public class ClientAddress {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "is_default")
+    @Column(name = "is_default", nullable = false)
     private boolean isDefault;
 
-    @Column(name = "city")
+    @Column(name = "city", nullable = false)
     private String city;
 
-    @Column(name = "street")
+    @Column(name = "street", nullable = false)
     private String street;
 
-    @Column(name = "house_number")
+    @Column(name = "house_number", nullable = false)
     private String houseNumber;
 
-    @Column(name = "apartment")
+    @Column(name = "apartment", nullable = false)
     private String apartment;
 
-    @Column(name = "postal_code")
+    @Column(name = "postal_code", nullable = false)
     private String postal_code;
 
     @ManyToOne

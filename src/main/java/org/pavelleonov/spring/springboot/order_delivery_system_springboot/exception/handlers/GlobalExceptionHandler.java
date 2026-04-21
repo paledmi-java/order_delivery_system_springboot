@@ -1,7 +1,10 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.handlers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.BusinessException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +17,15 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationErrors
             (MethodArgumentNotValidException ex) {
+
+        log.warn("Validation failed: {}", ex.getMessage());
 
         Map<String, String> errors = new HashMap<>();
 
@@ -76,7 +82,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex){
 
-        System.err.println(ex.getMessage());
+        log.error("Unexpected error occurred", ex);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(

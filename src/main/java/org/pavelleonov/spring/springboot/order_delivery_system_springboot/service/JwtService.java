@@ -3,6 +3,7 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.servi
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.JwtProperties;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
+@Slf4j
 @Service
 public class JwtService {
 
@@ -22,6 +24,7 @@ public class JwtService {
     }
 
     public String generateAccessToken(String username){
+        log.info("Generating access token for user {}", username);
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
@@ -31,6 +34,7 @@ public class JwtService {
     }
 
     public String generateRefreshToken(String username){
+        log.info("Generating refresh token for user {}", username);
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
@@ -47,9 +51,12 @@ public class JwtService {
                     .parseClaimsJws(token)
                     .getBody();
 
-            return claims.getExpiration().after(new Date()) ? claims.getSubject() : null;
+            String username = claims.getExpiration().after(new Date()) ? claims.getSubject() : null;
+            log.info("Token successfully parsed, username extracted");
+            return username;
 
         }catch (Exception e){
+            log.warn("Invalid or expired JWT token");
             return null;
         }
     }

@@ -18,10 +18,10 @@ public class OrderItem {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "price_snapshot")
+    @Column(name = "price_snapshot", nullable = false)
     private Integer priceSnapshot;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
     @ManyToOne

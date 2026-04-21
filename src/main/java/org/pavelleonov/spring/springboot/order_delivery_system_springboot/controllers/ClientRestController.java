@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.bucket_item_dto.AddItemToBucketRequestDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.bucket_item_dto.BucketItemDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.bucket_item_dto.RemoveItemToBucketRequestDTO;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientActivateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientPasswordUpdateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientUpdateSelfDTO;
@@ -62,6 +63,14 @@ public class ClientRestController {
     @Operation(summary = "Деактивировать свой аккаунт")
     public ResponseEntity<Void>  deactivateAccount(@AuthenticationPrincipal CustomUserDetails userDetails){
         clientService.deactivateAccount(userDetails.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/me/settings/activate")
+    @Operation(summary = "Активировать свой аккаунт")
+    public ResponseEntity<Void> activateAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                @RequestBody ClientActivateDTO dto){
+        clientService.activateAccount(userDetails.getId(), dto);
         return ResponseEntity.noContent().build();
     }
 

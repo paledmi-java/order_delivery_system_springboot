@@ -21,35 +21,35 @@ public class Client {
     @Column(name = "id")
     private Integer clientId;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", nullable = false)
     boolean isActive = true;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "is_authorised")
+    @Column(name = "is_authorised", nullable = false)
     private boolean isAuthorised = true;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "is_advertisable")
+    @Column(name = "is_advertisable", nullable = false)
     private boolean isAdvertisable = true;
 
-    @Column(name = "is_profile_complete")
+    @Column(name = "is_profile_complete", nullable = false)
     private boolean isProfileComplete = false;
 
-    @Column(name = "is_online_check_on")
+    @Column(name = "is_online_check_on", nullable = false)
     private boolean isOnlineCheckOn = false;
 
-    @Column(name = "bonuses_amount")
-    private int bonusesAmount = 0;
+    @Column(name = "bonuses_amount", nullable = false)
+    private int bonusesAmount;
 
     // заменить fetch на LAZY когда потом буду решать проблему N+1
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

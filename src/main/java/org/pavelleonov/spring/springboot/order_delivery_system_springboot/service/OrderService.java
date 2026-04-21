@@ -1,6 +1,7 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.PagedResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.ChangeOrderStatusRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.CreateOrderRequestDto;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -34,22 +37,24 @@ public class OrderService {
     private final ClientAddressRepository clientAddressRepository;
 
     @Transactional
-    public Client findClientById(int id){
+    public Client findClientById(int id) {
         return clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+                .orElseThrow(() -> {
+                    log.warn("Client with id = {} not found", id);
+                    return new ClientNotFoundException("Client not found");
+                });
     }
 
 
     @Transactional
     public OrderResponseDto makeAnOrder(int id, CreateOrderRequestDto dto) {
 
+        log.info("Creating new order: clientId = {}, areBonusesUsed = {}", id, dto.getAreBonusesUsed());
         Client client = findClientById(id);
         Bucket bucket = client.getBucket();
 
-        // решить проблемы N+1
         List<BucketItem> bucketItems = bucket.getBucketItems();
 
-        // Создание нового адреса
         ClientAddress clientAddress =
                 clientAddressRepository.findByClientAndIsDefault(client, true);
 
@@ -67,7 +72,7 @@ public class OrderService {
 
         String commentary = dto.getCommentary();
         boolean areBonusesUsed = dto.getAreBonusesUsed();
-        if(commentary == null){
+        if (commentary == null) {
             commentary = "";
         }
         // SET COMMENTARY
@@ -82,7 +87,7 @@ public class OrderService {
                 .sum();
 
         // SET IS DELIVERY FREE
-        if(price > 2000){
+        if (price > 2000) {
             order.setDeliveryFree(true);
         } else {
             order.setDeliveryFree(false);
@@ -94,7 +99,7 @@ public class OrderService {
             price = price - clientBonuses;
             client.setBonusesAmount(0);
         } else if (areBonusesUsed) {
-            client.setBonusesAmount(clientBonuses-price);
+            client.setBonusesAmount(clientBonuses - price);
             price = 0;
         }
 
@@ -104,35 +109,55 @@ public class OrderService {
         // SET CLIENT
         client.addOrderToClient(order);
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
         client.getBucket().getBucketItems().clear();
+        log.info("Bucket is cleared after order creation: clientId = {}", id);
 
+        log.info("Created new order: clientId = {}, orderId = {}, price = {}, isDeliveryFree = {}"
+                , id, savedOrder.getOrderId(), price, savedOrder.isDeliveryFree());
         return orderMapper.mapOrderToResponseDto(order);
     }
 
     @Transactional
-    public List<OrderResponseDto> getOrders(int id){
+    public List<OrderResponseDto> getOrders(int id) {
+        log.info("Getting client orders: clientId = {}", id);
+
         Client client = findClientById(id);
-        return client.getCompleteOrders()
+
+        List<OrderResponseDto> orderList =  client.getCompleteOrders()
                 .stream().map(orderMapper::mapOrderToResponseDto)
                 .toList();
+        log.info("Fetched {} orders for client id = {}", orderList.size(), id);
+
+        return orderList;
     }
 
     @Transactional
-    public PagedResponseDto<OrderResponseDto> getAllOrders(Pageable pageable){
+    public PagedResponseDto<OrderResponseDto> getAllOrders(Pageable pageable) {
+        log.info("Fetching all orders: page = {}, size = {}"
+                , pageable.getPageNumber(), pageable.getPageSize());
+
         Page<OrderResponseDto> dtos = orderRepository.findAll(pageable)
                 .map(orderMapper::mapOrderToResponseDto);
+
+        log.info("Fetched {} orders", dtos.getNumberOfElements());
 
         return pageMapper.toPagedResponse(dtos);
     }
 
     @Transactional
-    public OrderResponseDto changeOrderStatus(int id, ChangeOrderStatusRequestDto dto){
+    public OrderResponseDto changeOrderStatus(int id, ChangeOrderStatusRequestDto dto) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(()-> new OrderNotFoundException("Order not found"));
+                .orElseThrow(() -> {
+                    log.warn("Order not found: orderId = {}", id);
+                    return new OrderNotFoundException("Order not found");
+                });
+
         order.setStatus(dto.getStatus());
-        orderRepository.save(order);
-        return orderMapper.mapOrderToResponseDto(order);
+        Order orderSaved = orderRepository.save(order);
+        log.info("Order status changed: orderId = {}, status = {}"
+                , orderSaved.getOrderId(), orderSaved.getStatus());
+        return orderMapper.mapOrderToResponseDto(orderSaved);
     }
 
 

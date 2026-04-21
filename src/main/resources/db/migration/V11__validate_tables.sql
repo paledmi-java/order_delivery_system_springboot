@@ -1,0 +1,21 @@
+ALTER TABLE clients ADD CONSTRAINT uk_clients_phone_number UNIQUE (phone_number);
+ALTER TABLE clients ADD CONSTRAINT uk_clients_email UNIQUE (email);
+
+ALTER TABLE items ADD CONSTRAINT uk_items_name UNIQUE (item_name);
+ALTER TABLE items ADD CONSTRAINT uk_items_image_url UNIQUE(image_url);
+ALTER TABLE items MODIFY created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE items MODIFY updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+ALTER TABLE credentials ADD CONSTRAINT uk_credentials_login UNIQUE(login);
+
+ALTER TABLE orders MODIFY is_delivery_free TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE orders MODIFY are_bonuses_used TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE orders MODIFY created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE order_items MODIFY quantity INT NOT NULL DEFAULT 1;
+
+ALTER TABLE favourite_items MODIFY times_ordered INT NOT NULL DEFAULT 1;
+
+
+
+

@@ -25,27 +25,27 @@ public class Order {
     @Column(name = "id")
     private int orderId;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "is_delivery_free")
+    @Column(name = "is_delivery_free", nullable = false)
     private boolean isDeliveryFree;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private OrderStatus status = OrderStatus.ACTIVE;
 
     @Column(name = "commentary")
     private String commentary;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "delivered_at", updatable = false)
+    @Column(name = "delivered_at", nullable = false, updatable = false)
     private LocalDateTime deliveredAt = LocalDateTime.now()
             .plusMinutes(30 + (int)(Math.random() * 60));
 
-    @Column(name = "are_bonuses_used")
+    @Column(name = "are_bonuses_used", nullable = false)
     private boolean areBonusesUsed;
 
     @ManyToOne

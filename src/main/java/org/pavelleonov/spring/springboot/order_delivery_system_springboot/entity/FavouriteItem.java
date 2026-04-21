@@ -20,19 +20,19 @@ public class FavouriteItem {
     @Column
     private int id;
 
-    @Column(name = "added_at")
+    @Column(name = "added_at", nullable = false)
     private LocalDateTime addedAt;
 
-    @Column(name = "last_viewed_at")
+    @Column(name = "last_viewed_at", nullable = false)
     private LocalDateTime lastViewedAt;
 
     @Column(name = "removed_at")
     private LocalDateTime removedAt;
 
-    @Column(name = "priority")
+    @Column(name = "priority", nullable = false)
     private int priority;
 
-    @Column(name = "times_ordered")
+    @Column(name = "times_ordered", nullable = false)
     private int timesOrdered;
 
     @ManyToOne(fetch = FetchType.EAGER)

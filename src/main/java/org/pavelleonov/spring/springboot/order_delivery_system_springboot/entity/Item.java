@@ -21,46 +21,46 @@ public class Item implements Comparable<Item>{
     @Column(name = "id")
     private Integer itemId;
 
-    @Column(name = "item_name")
+    @Column(name = "item_name", nullable = false, unique = true)
     private String itemName;
 
-    @Column(name = "type_of_item")
+    @Column(name = "type_of_item", nullable = false)
     private String typeOfItem;
 
-    @Column(name = "ingredients")
+    @Column(name = "ingredients", nullable = false)
     private String ingredients;
 
-    @Column(name = "amount_of_pieces")
+    @Column(name = "amount_of_pieces", nullable = false)
     private int amountOfPieces;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "mass")
+    @Column(name = "mass", nullable = false)
     private int mass;
 
-    @Column(name = "kcal")
+    @Column(name = "kcal", nullable = false)
     private int kcal;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", nullable = false, unique = true)
     private String imageUrl;
 
-    @Column(name = "has_multiple_components")
+    @Column(name = "has_multiple_components", nullable = false)
     private boolean hasMultiComp;
 
-    @Column(name = "is_changeable")
+    @Column(name = "is_changeable", nullable = false)
     private boolean isChangeable;
 
-    @Column(name = "is_available")
+    @Column(name = "is_available", nullable = false)
     private boolean isAvailable;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
 
