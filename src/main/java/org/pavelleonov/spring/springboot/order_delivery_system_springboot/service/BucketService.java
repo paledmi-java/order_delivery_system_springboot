@@ -140,10 +140,13 @@ public class BucketService {
 
         if (dto.getQuantity() >= bucketItem.getQuantity()) {
             bucketItemRepository.delete(bucketItem);
+
             log.info("Bucket item removed completely: itemId = {}, bucketId = {}, quantity = {}"
                     ,dto.getItemId(), bucket.getId(), dto.getQuantity());
+
         } else {
            bucketItem.setQuantity(bucketItem.getQuantity() - dto.getQuantity());
+
             log.info("Bucket item quantity decreased: itemId = {}, bucketId = {}, quantity = {}"
                     ,dto.getItemId(), bucket.getId(), bucketItem.getQuantity() - dto.getQuantity());
         }

@@ -1,11 +1,12 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientAddressResponseDto {
     private boolean isDefault;
     private String city;

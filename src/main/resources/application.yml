@@ -45,6 +45,6 @@ logging:
 
 security:
   jwt:
-    secret: ${JWT_SECRET}
+    secret: "B5/wuDRUFYtV7mfWqgV3gTjCyQ9eA7wlFvuNGgxmiYs="
     access-token-expiration-ms: 86400000
     refresh-token-expiration-ms: 604800000

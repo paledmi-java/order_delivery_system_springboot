@@ -245,6 +245,7 @@ public class ClientService {
 
         log.info("Creating new address for client id = {}", id);
         Client client = findClientById(id);
+
         ClientAddress clientAddress = ClientAddress
                 .builder()
                 .client(client)
@@ -256,21 +257,16 @@ public class ClientService {
                 .build();
 
         if (dto.isDefault()) {
-            ClientAddress clientAddressLastDefault =
-                    client.getClientAddresses().stream().filter(ClientAddress::isDefault)
-                            .findAny().orElseThrow(() -> {
-                                log.warn("Last default address not found for client id = {}", id);
-                                return new ClientAddressIsInvalid("Address not found");
-                            });
-
-            clientAddressLastDefault.setDefault(false);
-            clientAddress.setDefault(true);
-
+            if (client.getClientAddresses().stream().anyMatch(ClientAddress::isDefault)) {
+                client.getClientAddresses().stream().filter(ClientAddress::isDefault)
+                        .findAny().ifPresent(ca -> ca.setDefault(false));
+                clientAddress.setDefault(true);
+            } else clientAddress.setDefault(true);
         } else {
             clientAddress.setDefault(false);
         }
-
         ClientAddress savedClientAddress = clientAddressRepository.save(clientAddress);
+
         log.info("Created new address id = {} for client id = {}", savedClientAddress.getId(), id);
 
         client.getClientAddresses().add(savedClientAddress);

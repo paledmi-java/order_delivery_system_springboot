@@ -12,6 +12,8 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 
+// УБРАТЬ БИЛДЕР ИЗ ENTITY ЗАМЕНИТЬ НА ФАБРИЧНЫЙ МЕТОД
+
 @Entity
 @Table(name = "clients")
 public class Client {
@@ -49,7 +51,7 @@ public class Client {
     private boolean isOnlineCheckOn = false;
 
     @Column(name = "bonuses_amount", nullable = false)
-    private int bonusesAmount;
+    private int bonusesAmount = 0;
 
     // заменить fetch на LAZY когда потом буду решать проблему N+1
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -58,7 +60,7 @@ public class Client {
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL
             , orphanRemoval = true, fetch = FetchType.LAZY)
-    private final List<ClientAddress> clientAddresses = new ArrayList<>();
+    private List<ClientAddress> clientAddresses = new ArrayList<>();
 
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private Set<Order> completeOrders = new LinkedHashSet<>();

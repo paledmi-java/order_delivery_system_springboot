@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+  flyway:
+    enabled: false
+
+security:
+  jwt:
+    secret: "B5/wuDRUFYtV7mfWqgV3gTjCyQ9eA7wlFvuNGgxmiYs="
+    access-token-expiration-ms: 86400000
+    refresh-token-expiration-ms: 604800000
