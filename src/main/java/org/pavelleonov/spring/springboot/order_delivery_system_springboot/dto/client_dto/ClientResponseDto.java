@@ -8,7 +8,6 @@ import java.time.LocalDate;
 
 public record ClientResponseDto(
          String name,
-         LocalDate dateOfBirth,
          String phoneNumber,
          String email,
          boolean isProfileComplete,

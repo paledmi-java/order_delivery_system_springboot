@@ -3,11 +3,13 @@ package org.pavelleonov.spring.springboot.order_delivery_system_springboot.servi
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientPasswordUpdateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Client;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.ClientAddress;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Credentials;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ClientAddressIsInvalid;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.InvalidPasswordException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientAddressMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.PageMapper;
@@ -28,6 +30,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+
 
 @SpringBootTest
 @Transactional
@@ -147,97 +150,4 @@ class ClientServiceTest {
 
     }
 
-//    @Test
-//    public void addNewAddress_shouldThrowWhenNoDefaultAddress(){
-//        List<ClientAddress> clientAddressList = new ArrayList<>();
-//
-//        ClientAddress clientAddress1 = new ClientAddress();
-//        clientAddress1.setDefault(false);
-//
-//        ClientAddress clientAddress2 = new ClientAddress();
-//        clientAddress2.setDefault(false);
-//
-//        clientAddressList.add(clientAddress1);
-//        clientAddressList.add(clientAddress2);
-//
-//        client.setClientAddresses(clientAddressList);
-//
-//        ClientAddressRequestDto dto1 = new ClientAddressRequestDto(
-//                true, "Samara", "Lenina",
-//                "23", "34", "344556"
-//        );
-//
-//        assertThatThrownBy(()->clientService.addNewAddress(client.getClientId(), dto1))
-//                .isInstanceOf(ClientAddressIsInvalid.class)
-//                .hasMessage("Address not found");
-//    }
-
-//    @Test
-//    void sanitizeName(){
-//
-//    }
-//
-//    @Test
-//    void sanitizeEmail(){
-//
-//    }
-//
-//    @Test
-//    void sanitizePhone(){
-//
-//    }
-//
-//    @Test
-//    void findClientById() {
-//        clientService.findClientById(1);
-//        verify(clientRepository).findById(1);
-//    }
-//
-//    @Test
-//    void getUser() {
-//    }
-//
-//    @Test
-//    void deactivateAccount() {
-//    }
-//
-//    @Test
-//    void updateBaseFields() {
-//    }
-//
-//    @Test
-//    void activateAccount() {
-//    }
-//
-//    @Test
-//    void updateClientSelf() {
-//    }
-//
-//    @Test
-//    void changePasswordSelf() {
-//    }
-//
-//    @Test
-//    void saveClient() {
-//    }
-//
-//    @Test
-//    void searchClients() {
-//    }
-//
-//    @Test
-//    void getAddresses() {
-//    }
-//
-//    @Test
-//    void updateClientByAdmin() {
-//    }
-//
-//    @Test
-//    void activateClientAccountAsAdmin() {
-//    }
-//
-//    @Test
-//    void changeClientPasswordAsAdmin() {
-//    }
 }

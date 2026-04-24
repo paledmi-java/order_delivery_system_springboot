@@ -23,12 +23,14 @@ public class Client {
     @Column(name = "id")
     private Integer clientId;
 
+    @Builder.Default
     @Column(name = "is_active", nullable = false)
     boolean isActive = true;
 
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Builder.Default
     @Column(name = "is_authorised", nullable = false)
     private boolean isAuthorised = true;
 
@@ -41,15 +43,19 @@ public class Client {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
+    @Builder.Default
     @Column(name = "is_advertisable", nullable = false)
     private boolean isAdvertisable = true;
 
+    @Builder.Default
     @Column(name = "is_profile_complete", nullable = false)
     private boolean isProfileComplete = false;
 
+    @Builder.Default
     @Column(name = "is_online_check_on", nullable = false)
     private boolean isOnlineCheckOn = false;
 
+    @Builder.Default
     @Column(name = "bonuses_amount", nullable = false)
     private int bonusesAmount = 0;
 
@@ -58,13 +64,16 @@ public class Client {
     @JoinColumn(name = "credentials_id")
     private Credentials credentials;
 
+    @Builder.Default
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL
             , orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ClientAddress> clientAddresses = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private Set<Order> completeOrders = new LinkedHashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
     orphanRemoval = true)
     private Set<FavouriteItem> favouriteItems = new LinkedHashSet<>();
@@ -74,6 +83,7 @@ public class Client {
     @JoinColumn(name = "bucket_id")
     private Bucket bucket;
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "client_roles",

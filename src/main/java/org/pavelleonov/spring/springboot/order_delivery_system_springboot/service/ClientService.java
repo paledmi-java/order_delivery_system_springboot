@@ -43,17 +43,6 @@ public class ClientService {
     private final PageMapper pageMapper;
 
 
-    private String sanitizeName(String name) {
-        return name.trim();
-    }
-
-    private String sanitizeEmail(String email) {
-        return email.trim().toLowerCase();
-    }
-
-    private String sanitizePhone(String phone) {
-        return phone.replaceAll("\\D", "");
-    }
 
     @Transactional
     public Client findClientById(int id) {
@@ -88,19 +77,17 @@ public class ClientService {
         StringBuilder changes = new StringBuilder();
 
         if (dto.getName() != null) {
-            String name = sanitizeName(dto.getName());
-            client.setName(name);
+            client.setName(dto.getName());
             changes.append("name, ");
         }
 
         if (dto.getEmail() != null) {
-            String email = sanitizeEmail(dto.getEmail());
-            client.setEmail(email);
+            client.setEmail(dto.getEmail());
             changes.append("email, ");
         }
 
         if (dto.getPhoneNumber() != null) {
-            client.setPhoneNumber(sanitizePhone(dto.getPhoneNumber()));
+            client.setPhoneNumber(dto.getPhoneNumber());
             changes.append("phone, ");
         }
 
@@ -176,7 +163,7 @@ public class ClientService {
         String hashedPassword = passwordEncoder.encode(clientCreateDTO.getPassword());
 
         Credentials credentials = Credentials.builder()
-                .login(sanitizeName(clientCreateDTO.getLogin()))
+                .login(clientCreateDTO.getLogin())
                 .hashedPassword(hashedPassword)
                 .build();
 
@@ -187,9 +174,9 @@ public class ClientService {
                 });
 
         Client client = Client.builder()
-                .name(sanitizeName(clientCreateDTO.getName()))
-                .phoneNumber(sanitizePhone(clientCreateDTO.getPhoneNumber()))
-                .email(sanitizeEmail(clientCreateDTO.getEmail()))
+                .name(clientCreateDTO.getName())
+                .phoneNumber(clientCreateDTO.getPhoneNumber())
+                .email(clientCreateDTO.getEmail())
                 .isActive(true)
                 .build();
 
