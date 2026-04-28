@@ -52,21 +52,21 @@ public class ClientService {
                     log.warn("Client with id = {} not found", id);
                     return new ClientNotFoundException("Client not found");
                 });
-    }
+    } //tested
 
 
     @Transactional
     public ClientResponseDto getUser(int id) {
         Client client = findClientById(id);
         return clientDtoMapper.toResponseDto(client);
-    }
+    } //tested
 
     @Transactional
     public void deactivateAccount(int id) {
         Client client = findClientById(id);
         log.info("Deactivating client with id={}", id);
         client.setActive(false);
-    }
+    }  //tested
 
 
     // Поменять на mapStruct
@@ -110,7 +110,7 @@ public class ClientService {
             log.info("Updated client id = {}, fields = [{}]", id, changes);
         }
         return client;
-    }
+    } //tested
 
 
     // CLIENT
@@ -129,17 +129,17 @@ public class ClientService {
         log.info("Setting active client with id = {}", id);
         client.setActive(true);
         clientRepository.save(client);
-    }
+    } //tested
 
     @Transactional
     public ClientResponseDto updateClientSelf(int id, ClientUpdateSelfDTO dto) {
         Client client = updateBaseFields(id, dto);
         clientRepository.save(client);
         return clientDtoMapper.toResponseDto(client);
-    }
+    } //tested
 
     @Transactional
-    public void changePasswordSelf(int id, ClientPasswordUpdateDTO dto) {
+    public void changePasswordSelf(int id, ClientPasswordUpdateDTO dto)  {
         Client client = findClientById(id);
         Credentials credentials = client.getCredentials();
         if (!passwordEncoder.matches(dto.getOldPassword(), credentials.getHashedPassword())) {
@@ -154,7 +154,7 @@ public class ClientService {
 
         log.info("Password changed for client id = {}", id);
         credentials.setHashedPassword(passwordEncoder.encode(dto.getNewPassword()));
-    }
+    } //tested
 
     @Transactional
     public ClientResponseDto saveClient(ClientCreateDTO clientCreateDTO) {
@@ -190,11 +190,12 @@ public class ClientService {
         Client savedClient = clientRepository.save(client);
         log.info("Created new client id = {}", savedClient.getClientId());
         return clientDtoMapper.toResponseDto(savedClient);
-    }
+    } //tested
 
 
     @Transactional
-    public PagedResponseDto<ClientResponseDto> searchClients(ClientFilter clientFilter, Pageable pageable) {
+    public PagedResponseDto<ClientResponseDto> searchClients
+            (ClientFilter clientFilter, Pageable pageable) {
 
         log.info("Searching clients: name = {}, email = {}, " +
                         "phone = {}, isActive = {}, page = {}, size = {}",
@@ -228,7 +229,8 @@ public class ClientService {
     }
 
     @Transactional
-    public ClientAddressResponseDto addNewAddress(int id, ClientAddressRequestDto dto) {
+    public ClientAddressResponseDto addNewAddress
+            (int id, ClientAddressRequestDto dto) {
 
         log.info("Creating new address for client id = {}", id);
         Client client = findClientById(id);
@@ -252,14 +254,12 @@ public class ClientService {
         } else {
             clientAddress.setDefault(false);
         }
+
         ClientAddress savedClientAddress = clientAddressRepository.save(clientAddress);
-
         log.info("Created new address id = {} for client id = {}", savedClientAddress.getId(), id);
-
         client.getClientAddresses().add(savedClientAddress);
-
         return clientAddressMapper.toResponseDto(savedClientAddress);
-    }
+    } //tested
 
 
     @Transactional
@@ -301,23 +301,24 @@ public class ClientService {
         }
 
         return clientDtoMapper.toResponseDto(savedClient);
-    }
+    } //tested
 
     @Transactional
-    public ClientResponseDto activateClientAccountAsAdmin(int id) {
+    public void activateClientAccountAsAdmin(int id) {
         Client client = findClientById(id);
         client.setActive(true);
         log.info("Set client active id = {} as admin", id);
-        return clientDtoMapper.toResponseDto(clientRepository.save(client));
-    }
+        clientRepository.save(client);
+    } //tested
 
     @Transactional
-    public ClientResponseDto changeClientPasswordAsAdmin(int id, ClientAdminPasswordUpdateDTO dto) {
+    public ClientResponseDto changeClientPasswordAsAdmin
+            (int id, ClientAdminPasswordUpdateDTO dto) {
         Client client = findClientById(id);
         Credentials credentials = client.getCredentials();
         credentials.setHashedPassword(passwordEncoder.encode(dto.getNewPassword()));
         client.addCredentialsToClient(credentials);
         log.info("Changed client password id = {} as admin", id);
         return clientDtoMapper.toResponseDto(clientRepository.save(client));
-    }
+    } //tested
 }

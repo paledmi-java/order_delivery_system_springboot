@@ -1,15 +1,11 @@
 package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.ClientPasswordUpdateDTO;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Client;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.ClientAddress;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.Credentials;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ClientAddressIsInvalid;
-import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.InvalidPasswordException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientAddressMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.ClientDtoMapper;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.PageMapper;
@@ -17,24 +13,19 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.reposi
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
 @Transactional
-class ClientServiceTest {
+class ClientServiceIntegrationTest {
 
     @Autowired
     private ClientService clientService;

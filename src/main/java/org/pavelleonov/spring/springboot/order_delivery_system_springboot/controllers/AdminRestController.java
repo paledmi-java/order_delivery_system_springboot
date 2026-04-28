@@ -64,8 +64,9 @@ public class AdminRestController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/activate")
     @Operation(summary = "Активировать аккаунт клиента")
-    public ClientResponseDto activateAccount(@PathVariable int id){
-        return clientService.activateClientAccountAsAdmin(id);
+    public ResponseEntity<Void> activateAccount(@PathVariable int id){
+        clientService.activateClientAccountAsAdmin(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
