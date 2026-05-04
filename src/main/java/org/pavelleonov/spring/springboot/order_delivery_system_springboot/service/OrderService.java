@@ -7,6 +7,7 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.or
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.CreateOrderRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.order_dto.OrderResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.entity.*;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ClientAddressNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.ClientNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.exceptions.OrderNotFoundException;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mappers.OrderItemMapper;
@@ -56,7 +57,9 @@ public class OrderService {
         List<BucketItem> bucketItems = bucket.getBucketItems();
 
         ClientAddress clientAddress =
-                clientAddressRepository.findByClientAndIsDefault(client, true);
+                clientAddressRepository.findByClientAndIsDefault(client, true)
+                        .orElseThrow(() -> new ClientAddressNotFoundException
+                                ("Client address not found"));
 
         Order order = new Order();
 
@@ -82,8 +85,8 @@ public class OrderService {
         order.setAreBonusesUsed(areBonusesUsed);
 
         int price = bucketItems.stream()
-                .map(item -> item.getItem().getPrice())
-                .mapToInt(i -> i.intValue())
+                .map(item -> item.getItem().getPrice() * item.getQuantity())
+                .mapToInt(i -> i)
                 .sum();
 
         // SET IS DELIVERY FREE
@@ -111,11 +114,12 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
         client.getBucket().getBucketItems().clear();
-        log.info("Bucket is cleared after order creation: clientId = {}", id);
 
+        log.info("Bucket is cleared after order creation: clientId = {}", id);
         log.info("Created new order: clientId = {}, orderId = {}, price = {}, isDeliveryFree = {}"
                 , id, savedOrder.getOrderId(), price, savedOrder.isDeliveryFree());
-        return orderMapper.mapOrderToResponseDto(order);
+
+        return orderMapper.mapOrderToResponseDto(savedOrder);
     }
 
     @Transactional

@@ -23,7 +23,6 @@ import java.util.List;
 
 public class BucketService {
 
-    private final BucketRepository bucketRepository;
     private final ClientRepository clientRepository;
     private final ItemRepository itemRepository;
     private final BucketItemRepository bucketItemRepository;
@@ -105,6 +104,7 @@ public class BucketService {
                                 .id(new BucketItemId())
                                 .item(dbItem)
                                 .bucket(finalBucket)
+                                .quantity(0)
                                 .build());
 
         bucketItem.setQuantity(bucketItem.getQuantity() + quantity);
@@ -113,6 +113,7 @@ public class BucketService {
 
         log.info("Item added to bucket: itemId = {}, client id = {} , quantity = {}",
                 itemId, idDbClient, quantity);
+
         return bucketItemDtoMapper.map(bucketItem);
     }
 

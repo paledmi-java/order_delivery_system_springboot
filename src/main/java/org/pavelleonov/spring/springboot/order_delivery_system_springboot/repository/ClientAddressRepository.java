@@ -9,7 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface ClientAddressRepository extends JpaRepository<ClientAddress, Integer> {
-    Optional<ClientAddress> findByClient(Client client);
-
-    ClientAddress findByClientAndIsDefault(Client client, boolean isDefault);
+    Optional<ClientAddress> findByClientAndIsDefault(Client client, boolean isDefault);
 }

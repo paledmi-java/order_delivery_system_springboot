@@ -43,7 +43,6 @@ public class ClientService {
     private final PageMapper pageMapper;
 
 
-
     @Transactional
     public Client findClientById(int id) {
 
@@ -226,7 +225,7 @@ public class ClientService {
 
         log.info("Found {} clients", dtos.getNumberOfElements());
         return pageMapper.toPagedResponse(dtos);
-    }
+    } //tested
 
     @Transactional
     public ClientAddressResponseDto addNewAddress
@@ -263,13 +262,13 @@ public class ClientService {
 
 
     @Transactional
-    public List<ClientAddressResponseDto> getAddresses(int id) {
+    public List<ClientAddressResponseDto> getAddresses(int id){
         Client client = findClientById(id);
         log.info("Getting addresses for client id = {}", id);
         return client.getClientAddresses().stream()
                 .map(clientAddressMapper::toResponseDto)
                 .toList();
-    }
+    } //tested
 
 
     //ADMIN

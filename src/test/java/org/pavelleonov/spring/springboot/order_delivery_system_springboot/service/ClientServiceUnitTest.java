@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.PagedResponseDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.*;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressRequestDto;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.dto.client_dto.addresses.ClientAddressResponseDto;
@@ -26,14 +27,22 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mapper
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientAddressRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.RoleRepository;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.filters.ClientFilter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
+
 
 
 @ExtendWith(MockitoExtension.class)
@@ -653,6 +662,106 @@ public class ClientServiceUnitTest {
                         expectedResponseDto.bonusesAmount(),
                         expectedResponseDto.isOnlineCheckOn(),
                         expectedResponseDto.isProfileComplete());
+    }
+
+
+
+    @Test
+    public void getAddresses_ShouldReturnListOfAddresses(){
+        //given
+        ClientAddress existingClientAddress1 = new ClientAddress(1,
+                false, "Samara", "Lenina",
+                "45", "32", "545332", client);
+
+        ClientAddress existingClientAddress2 = new ClientAddress(1,
+                true, "Moscow", "Pushkina",
+                "55", "66", "343423", client);
+
+        client.getClientAddresses().add(existingClientAddress1);
+        client.getClientAddresses().add(existingClientAddress2);
+
+        ClientAddressResponseDto responseDto1 = new ClientAddressResponseDto();
+        responseDto1.setCity(existingClientAddress1.getCity());
+        responseDto1.setStreet(existingClientAddress1.getStreet());
+        responseDto1.setHouseNumber(existingClientAddress1.getHouseNumber());
+        responseDto1.setApartment(existingClientAddress1.getApartment());
+        responseDto1.setPostal_code(existingClientAddress1.getPostal_code());
+        responseDto1.setDefault(existingClientAddress1.isDefault());
+
+        ClientAddressResponseDto responseDto2 = new ClientAddressResponseDto();
+        responseDto2.setCity(existingClientAddress2.getCity());
+        responseDto2.setStreet(existingClientAddress2.getStreet());
+        responseDto2.setHouseNumber(existingClientAddress2.getHouseNumber());
+        responseDto2.setApartment(existingClientAddress2.getApartment());
+        responseDto2.setPostal_code(existingClientAddress2.getPostal_code());
+        responseDto2.setDefault(existingClientAddress2.isDefault());
+
+
+        //when
+        when(clientRepository.findById(client.getClientId())).thenReturn(Optional.of(client));
+        when(clientAddressMapper.toResponseDto(existingClientAddress1)).thenReturn(responseDto1);
+        when(clientAddressMapper.toResponseDto(existingClientAddress2)).thenReturn(responseDto2);
+
+        List<ClientAddressResponseDto> addressList
+                = clientService.getAddresses(client.getClientId());
+        //then
+
+        verify(clientRepository).findById(client.getClientId());
+        verify(clientAddressMapper).toResponseDto(existingClientAddress1);
+        verify(clientAddressMapper).toResponseDto(existingClientAddress2);
+
+        assertThat(addressList)
+                .hasSize(2).containsExactly(responseDto1, responseDto2);
+    }
+
+    @Test
+    public void getAddresses_ShouldReturnEmptyListOfAddresses(){
+        when(clientRepository.findById(client.getClientId())).thenReturn(Optional.of(client));
+
+        List<ClientAddressResponseDto> addressList
+                = clientService.getAddresses(client.getClientId());
+
+        assertThat(addressList).isEmpty();
+
+        verify(clientAddressMapper, never()).toResponseDto(any());
+    }
+
+    @Test
+    public void searchClients_ShouldReturnPageOfClientDto(){
+
+        Pageable pageable = PageRequest.of(0,10);
+
+        //given
+        ClientFilter clientFilter = new ClientFilter();
+        clientFilter.setEmail("sally@yandex.ru");
+        clientFilter.setName("Sally");
+        clientFilter.setPhone("+88888888888");
+        clientFilter.setIsActive(true);
+
+        ClientResponseDto dto = new ClientResponseDto("Sally", "+88888888888",
+                "sally@yandex.ru", false,
+                false, 0, "sallykromsally");
+
+        Page<Client> clientPage = new PageImpl<>(List.of(client), pageable, 1);
+
+        PagedResponseDto<ClientResponseDto> expected = new PagedResponseDto<>();
+
+        when(clientRepository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(clientPage);
+
+        when(clientDtoMapper.toResponseDto(client)).thenReturn(dto);
+        when(pageMapper.toPagedResponse(any(Page.class))).thenReturn(expected);
+
+        //when
+        PagedResponseDto<ClientResponseDto> pagedResponseDto =
+                clientService.searchClients(clientFilter, pageable);
+
+        //then
+        verify(clientRepository).findAll(any(Specification.class), eq(pageable));
+        verify(clientDtoMapper).toResponseDto(client);
+        verify(pageMapper).toPagedResponse(any(Page.class));
+
+        assertThat(pagedResponseDto).isEqualTo(expected);
     }
 }
 

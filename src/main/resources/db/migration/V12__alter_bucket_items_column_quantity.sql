@@ -1,0 +1,2 @@
+ALTER TABLE bucket_items
+    MODIFY COLUMN quantity INT NOT NULL DEFAULT 0;

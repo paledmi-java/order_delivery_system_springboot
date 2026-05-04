@@ -27,5 +27,6 @@ public class BucketItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @Column(name = "quantity", nullable = false)
     private int quantity;
 }
