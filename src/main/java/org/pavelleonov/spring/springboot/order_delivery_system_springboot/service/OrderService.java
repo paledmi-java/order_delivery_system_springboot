@@ -116,8 +116,8 @@ public class OrderService {
         client.getBucket().getBucketItems().clear();
 
         log.info("Bucket is cleared after order creation: clientId = {}", id);
-        log.info("Created new order: clientId = {}, orderId = {}, price = {}, isDeliveryFree = {}"
-                , id, savedOrder.getOrderId(), price, savedOrder.isDeliveryFree());
+        log.info("Created new order: clientId = {}, orderId = {}, price = {}, isDeliveryFree = {}, clientBonuses = {}"
+                , id, savedOrder.getOrderId(), price, savedOrder.isDeliveryFree(), savedOrder.getClient().getBonusesAmount());
 
         return orderMapper.mapOrderToResponseDto(savedOrder);
     }
@@ -131,6 +131,7 @@ public class OrderService {
         List<OrderResponseDto> orderList =  client.getCompleteOrders()
                 .stream().map(orderMapper::mapOrderToResponseDto)
                 .toList();
+
         log.info("Fetched {} orders for client id = {}", orderList.size(), id);
 
         return orderList;
@@ -159,8 +160,10 @@ public class OrderService {
 
         order.setStatus(dto.getStatus());
         Order orderSaved = orderRepository.save(order);
+
         log.info("Order status changed: orderId = {}, status = {}"
                 , orderSaved.getOrderId(), orderSaved.getStatus());
+
         return orderMapper.mapOrderToResponseDto(orderSaved);
     }
 

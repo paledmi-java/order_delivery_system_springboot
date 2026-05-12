@@ -1,4 +1,4 @@
-package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service;
+package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +21,7 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mapper
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.BucketItemRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ItemRepository;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.BucketService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

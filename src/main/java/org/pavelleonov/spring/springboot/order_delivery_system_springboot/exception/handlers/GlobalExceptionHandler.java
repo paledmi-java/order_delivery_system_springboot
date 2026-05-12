@@ -12,6 +12,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -40,6 +41,20 @@ public class GlobalExceptionHandler {
                         errors
                 )
         );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMissMatch
+            (MethodArgumentTypeMismatchException ex){
+        log.error("Argument miss match occurred", ex);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        "Wrong input format",
+                        HttpStatus.BAD_REQUEST.value(),
+                        LocalDateTime.now(),
+                        null
+                ));
     }
 
     @ExceptionHandler(value = DataIntegrityViolationException.class)
@@ -92,4 +107,6 @@ public class GlobalExceptionHandler {
                         null
                 ));
     }
+
+
 }

@@ -32,64 +32,70 @@ public class AdminRestController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     @Operation(summary = "Получить клиента")
-    public ClientResponseDto getUser(@PathVariable int id) {
-        return clientService.getUser(id);
-    }
+    public ClientResponseDto getUser
+            (@PathVariable int id) {
+        return clientService.getUser(id); //tested
+    } //tested
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
     @Operation(summary = "Обновить клиента")
-    public ClientResponseDto updateUser(@PathVariable int id,
-                                        @Valid @RequestBody ClientUpdateAdminDTO dto) {
+    public ClientResponseDto updateUser
+            (@PathVariable int id,
+             @Valid @RequestBody ClientUpdateAdminDTO dto) {
 
         return clientService.updateClientByAdmin(id, dto);
-    }
+    } //tested
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
     @Operation(summary = "Получить список клиентов")
-    public PagedResponseDto<ClientResponseDto> findUsers(ClientFilter filter,
-                                                         @ParameterObject Pageable pageable) {
+    public PagedResponseDto<ClientResponseDto> findUsers
+            (ClientFilter filter,
+             @ParameterObject Pageable pageable) {
         return clientService.searchClients(filter, pageable);
-    }
+    } //tested
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/deactivate")
     @Operation(summary = "Деактивировать аккаунт клиента")
-    public ResponseEntity<Void> deactivateAccount(@PathVariable int id){
+    public ResponseEntity<Void> deactivateAccount(@PathVariable int id) {
         clientService.deactivateAccount(id);
         return ResponseEntity.noContent().build();
-    }
+    } //tested
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/activate")
     @Operation(summary = "Активировать аккаунт клиента")
-    public ResponseEntity<Void> activateAccount(@PathVariable int id){
+    public ResponseEntity<Void> activateAccount(@PathVariable int id) {
         clientService.activateClientAccountAsAdmin(id);
         return ResponseEntity.noContent().build();
-    }
+    } //tested
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/password")
     @Operation(summary = "Изменить пароль клиента")
-    public ClientResponseDto updateClientPassword(@PathVariable int id,
-                                                  @Valid @RequestBody ClientAdminPasswordUpdateDTO dto){
+    public ClientResponseDto updateClientPassword
+            (@PathVariable int id,
+             @Valid @RequestBody ClientAdminPasswordUpdateDTO dto) {
         return clientService.changeClientPasswordAsAdmin(id, dto);
-    }
+    } //tested
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/orders")
     @Operation(summary = "Посмотреть заказы")
-    public PagedResponseDto<OrderResponseDto> getOrders(@ParameterObject Pageable pageable){
+    public PagedResponseDto<OrderResponseDto> getOrders
+            (@ParameterObject Pageable pageable) {
         return orderService.getAllOrders(pageable);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/orders/{id}/status")
     @Operation(summary = "Изменить статус заказа")
-    public OrderResponseDto changeOrderStatus(@PathVariable int id,
-                                               @Valid @RequestBody ChangeOrderStatusRequestDto dto){
+    public OrderResponseDto changeOrderStatus
+            (@PathVariable int id,
+             @Valid @RequestBody ChangeOrderStatusRequestDto dto) {
         return orderService.changeOrderStatus(id, dto);
-    }
+    } //tested
 
 }

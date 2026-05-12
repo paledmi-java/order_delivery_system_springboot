@@ -1,10 +1,9 @@
-package org.pavelleonov.spring.springboot.order_delivery_system_springboot.handlers;
+package org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.handlers;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;

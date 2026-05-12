@@ -1,4 +1,4 @@
-package org.pavelleonov.spring.springboot.order_delivery_system_springboot.handlers;
+package org.pavelleonov.spring.springboot.order_delivery_system_springboot.exception.handlers;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

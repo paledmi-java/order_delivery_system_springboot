@@ -37,100 +37,108 @@ public class ClientRestController {
 
     @GetMapping("/me")
     @Operation(summary = "Домашняя страницу пользователя")
-    public ClientResponseDto getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ClientResponseDto getCurrentUser(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         return clientService.getUser(userDetails.getId());
-    }
+    } //tested
 
     @PatchMapping("/me/settings")
     @Operation(summary = "Обновить свой аккаунт")
-    public ClientResponseDto updateClientSelf(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                              @Valid @RequestBody ClientUpdateSelfDTO clientUpdateSelfDTO){
+    public ClientResponseDto updateClientSelf
+            (@AuthenticationPrincipal CustomUserDetails userDetails,
+             @Valid @RequestBody ClientUpdateSelfDTO clientUpdateSelfDTO) {
 
-        return clientService
-                .updateClientSelf(userDetails.getId(), clientUpdateSelfDTO);
-    }
+        return clientService.updateClientSelf(userDetails.getId(), clientUpdateSelfDTO);
+    } //tested
 
 
     @PostMapping("/me/settings/password")
     @Operation(summary = "Изменить свой пароль")
-    public ResponseEntity<Void> updateClientPassword(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                            @Valid @RequestBody ClientPasswordUpdateDTO dto){
-        clientService.changePasswordSelf(customUserDetails.getId(), dto);
+    public ResponseEntity<Void> updateClientPassword
+            (@AuthenticationPrincipal CustomUserDetails userDetails,
+             @Valid @RequestBody ClientPasswordUpdateDTO dto) {
+        clientService.changePasswordSelf(userDetails.getId(), dto);
         return ResponseEntity.noContent().build();
-    }
+    } //tested
 
     @PatchMapping("/me/settings/deactivate")
     @Operation(summary = "Деактивировать свой аккаунт")
-    public ResponseEntity<Void>  deactivateAccount(@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<Void> deactivateAccount
+            (@AuthenticationPrincipal CustomUserDetails userDetails) {
         clientService.deactivateAccount(userDetails.getId());
         return ResponseEntity.noContent().build();
-    }
+    } //tested
 
     @PatchMapping("/me/settings/activate")
     @Operation(summary = "Активировать свой аккаунт")
-    public ResponseEntity<Void> activateAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                @RequestBody ClientActivateDTO dto){
+    public ResponseEntity<Void> activateAccount
+            (@AuthenticationPrincipal CustomUserDetails userDetails,
+             @RequestBody ClientActivateDTO dto) {
         clientService.activateAccount(userDetails.getId(), dto);
         return ResponseEntity.noContent().build();
-    }
+    } //tested
 
     @GetMapping("/me/bucket")
     @Operation(summary = "Открыть свою корзину")
-    public List<BucketItemDto> openBucket(@AuthenticationPrincipal CustomUserDetails userDetails){
-
+    public List<BucketItemDto> openBucket
+            (@AuthenticationPrincipal CustomUserDetails userDetails) {
         return bucketService.openBucket(userDetails.getId());
-    }
+    } //tested
 
     @PostMapping("/me/bucket/add")
     @Operation(summary = "Добавить товар в корзину")
     public BucketItemDto addBucketItem(@Valid @RequestBody AddItemToBucketRequestDTO dto,
                                        @AuthenticationPrincipal
-                                                   CustomUserDetails userDetails){
+                                       CustomUserDetails userDetails) {
         return bucketService.addItemToBucket
                 (userDetails.getId(),
                         dto.getItemId(), dto.getQuantity());
-    }
+    } //tested
 
-    @PatchMapping("/me/bucket/remove/{itemId}")
+    @PatchMapping("/me/bucket/remove/")
     @Operation(summary = "Удалить товар из корзины")
-    public ResponseEntity<Void> removeBucketItem(@Valid @RequestBody RemoveItemToBucketRequestDTO dto,
-                                       @AuthenticationPrincipal
-                                       CustomUserDetails userDetails){
-     bucketService.removeItemFromBucket
+    public ResponseEntity<Void> removeBucketItem
+            (@Valid @RequestBody RemoveItemToBucketRequestDTO dto,
+             @AuthenticationPrincipal
+             CustomUserDetails userDetails) {
+        bucketService.removeItemFromBucket
                 (userDetails.getId(), dto);
-     return ResponseEntity.noContent().build();
-    }
+        return ResponseEntity.noContent().build();
+    } //tested
 
 
     // ИСПРАВИТЬ РЕКУРСИЮ
     @PostMapping("/me/bucket/order")
     @Operation(summary = "Сделать заказ")
-    public OrderResponseDto makeAnOrder(@AuthenticationPrincipal
-                                            CustomUserDetails userDetails,
-                                        @Valid @RequestBody CreateOrderRequestDto dto){
-
+    public OrderResponseDto makeAnOrder
+    (@AuthenticationPrincipal
+     CustomUserDetails userDetails,
+     @Valid @RequestBody CreateOrderRequestDto dto) {
         return orderService.makeAnOrder(userDetails.getId(), dto);
-    }
+    }//tested
 
     @PostMapping("/me/settings/addresses")
     @Operation(summary = "Добавить новый адрес доставки")
-    public ClientAddressResponseDto addNewAddress(@AuthenticationPrincipal
-                                           CustomUserDetails userDetails,
-                                                  @Valid @RequestBody ClientAddressRequestDto dto){
+    public ClientAddressResponseDto addNewAddress
+            (@AuthenticationPrincipal
+             CustomUserDetails userDetails,
+             @Valid @RequestBody ClientAddressRequestDto dto) {
         return clientService.addNewAddress(userDetails.getId(), dto);
-    }
+    } //tested
 
     @GetMapping("/me/orders")
-    @Operation(summary = "Посмотреть свои заказы" )
-    public List<OrderResponseDto> showAllOrders(@AuthenticationPrincipal
-                                                    CustomUserDetails userDetails){
+    @Operation(summary = "Посмотреть свои заказы")
+    public List<OrderResponseDto> showAllOrders
+            (@AuthenticationPrincipal
+             CustomUserDetails userDetails) {
         return orderService.getOrders(userDetails.getId());
     }
 
     @GetMapping("me/adresses")
-    @Operation(summary = "Посмотреть свои адреса" )
-    public List<ClientAddressResponseDto> getAddresses(@AuthenticationPrincipal
-                                                       CustomUserDetails userDetails){
+    @Operation(summary = "Посмотреть свои адреса")
+    public List<ClientAddressResponseDto> getAddresses
+            (@AuthenticationPrincipal
+             CustomUserDetails userDetails) {
         return clientService.getAddresses(userDetails.getId());
     }
 }

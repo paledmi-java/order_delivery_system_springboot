@@ -1,4 +1,4 @@
-package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service;
+package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.integration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,7 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.mapper
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientAddressRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.RoleRepository;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;

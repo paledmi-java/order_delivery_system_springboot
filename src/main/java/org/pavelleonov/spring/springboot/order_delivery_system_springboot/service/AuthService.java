@@ -23,11 +23,9 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
-
     private final JwtService jwtService;
 
     public AuthResponseDto login(LoginRequest request){
-
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

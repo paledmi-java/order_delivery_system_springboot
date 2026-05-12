@@ -1,4 +1,4 @@
-package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service;
+package org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +28,7 @@ import org.pavelleonov.spring.springboot.order_delivery_system_springboot.reposi
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.ClientRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.repository.RoleRepository;
 import org.pavelleonov.spring.springboot.order_delivery_system_springboot.security.filters.ClientFilter;
+import org.pavelleonov.spring.springboot.order_delivery_system_springboot.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
