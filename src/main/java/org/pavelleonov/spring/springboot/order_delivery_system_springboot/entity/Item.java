@@ -31,16 +31,16 @@ public class Item implements Comparable<Item>{
     private String ingredients;
 
     @Column(name = "amount_of_pieces", nullable = false)
-    private int amountOfPieces;
+    private Integer amountOfPieces;
 
     @Column(name = "price", nullable = false)
-    private int price;
+    private Integer price;
 
     @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "mass", nullable = false)
-    private int mass;
+    private Integer mass;
 
     @Column(name = "kcal", nullable = false)
     private int kcal;

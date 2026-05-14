@@ -42,7 +42,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AdminRestController.class)
-@WithMockUser
 @AutoConfigureMockMvc(addFilters = false)
 class AdminRestControllerUnitTest {
 
@@ -277,6 +276,34 @@ class AdminRestControllerUnitTest {
                 .andExpect(status().isBadRequest());
 
         verify(orderService, never()).changeOrderStatus(eq(1), any(ChangeOrderStatusRequestDto.class));
+
+    }
+
+    @Test
+    void getOrders_ShouldReturn200() throws Exception{
+
+        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
+                .commentary("Commentary")
+                .build();
+
+        Pageable pageable = PageRequest.of(0, 10);
+        PagedResponseDto<OrderResponseDto> pagedResponseDto = new PagedResponseDto<>();
+        pagedResponseDto.setContent(List.of(orderResponseDto));
+        pagedResponseDto.setTotalPages(1);
+        pagedResponseDto.setSize(10);
+
+        when(orderService.getAllOrders(eq(pageable))).thenReturn(pagedResponseDto);
+
+        mockMvc.perform(get("/api/users/orders")
+                        .param("page", "0")
+                        .param("size", "10")
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].commentary")
+                        .value("Commentary")
+                ).andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.size").value(10));
+
+        verify(orderService).getAllOrders(eq(pageable));
 
     }
 }

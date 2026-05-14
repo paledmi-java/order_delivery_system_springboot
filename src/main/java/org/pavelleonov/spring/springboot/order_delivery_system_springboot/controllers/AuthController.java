@@ -29,9 +29,11 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Зарегистрировать нового пользователя")
-    public ClientResponseDto register(@Valid @RequestBody ClientCreateDTO dto){
+    public ClientResponseDto register
+            (@Valid @RequestBody ClientCreateDTO dto){
         return clientService.saveClient(dto);
     }
+
 
     @PostMapping("/refresh")
     @Operation(summary = "Обновить токены")

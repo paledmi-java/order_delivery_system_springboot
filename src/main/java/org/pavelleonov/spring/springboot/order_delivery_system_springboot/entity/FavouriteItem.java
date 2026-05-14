@@ -18,7 +18,7 @@ public class FavouriteItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private Integer id;
 
     @Column(name = "added_at", nullable = false)
     private LocalDateTime addedAt;
@@ -30,10 +30,10 @@ public class FavouriteItem {
     private LocalDateTime removedAt;
 
     @Column(name = "priority", nullable = false)
-    private int priority;
+    private Integer priority;
 
     @Column(name = "times_ordered", nullable = false)
-    private int timesOrdered;
+    private Integer timesOrdered;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")

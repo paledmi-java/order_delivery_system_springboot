@@ -87,7 +87,8 @@ public class AdminRestController {
     public PagedResponseDto<OrderResponseDto> getOrders
             (@ParameterObject Pageable pageable) {
         return orderService.getAllOrders(pageable);
-    }
+    } //tested
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/orders/{id}/status")

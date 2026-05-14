@@ -25,7 +25,7 @@ public class Client {
 
     @Builder.Default
     @Column(name = "is_active", nullable = false)
-    boolean isActive = true;
+    private boolean isActive = true;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -57,7 +57,7 @@ public class Client {
 
     @Builder.Default
     @Column(name = "bonuses_amount", nullable = false)
-    private int bonusesAmount = 0;
+    private Integer bonusesAmount = 0;
 
     // заменить fetch на LAZY когда потом буду решать проблему N+1
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

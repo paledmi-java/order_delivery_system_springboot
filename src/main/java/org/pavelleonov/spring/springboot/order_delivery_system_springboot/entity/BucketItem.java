@@ -28,5 +28,5 @@ public class BucketItem {
     private Item item;
 
     @Column(name = "quantity", nullable = false)
-    private int quantity;
+    private Integer quantity;
 }

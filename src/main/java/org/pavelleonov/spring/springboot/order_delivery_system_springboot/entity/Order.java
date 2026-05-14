@@ -23,10 +23,10 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int orderId;
+    private Integer orderId;
 
     @Column(name = "price", nullable = false)
-    private int price;
+    private Integer price;
 
     @Column(name = "is_delivery_free", nullable = false)
     private boolean isDeliveryFree;
