@@ -9,9 +9,9 @@ spring:
         max-page-size: 100
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/order_system_spring_db}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456qwertyasdfgh}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   flyway:
@@ -49,3 +49,10 @@ security:
     secret: "B5/wuDRUFYtV7mfWqgV3gTjCyQ9eA7wlFvuNGgxmiYs="
     access-token-expiration-ms: 86400000
     refresh-token-expiration-ms: 604800000
+
+server:
+  forward-headers-strategy: framework
+  tomcat:
+    remoteip:
+      protocol-header: X-Forwarded-Proto
+      remote-ip-header: X-Forwarded-For

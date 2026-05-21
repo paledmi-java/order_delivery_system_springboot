@@ -36,7 +36,7 @@ public class ClientRestController {
     private final OrderService orderService;
 
     @GetMapping("/me")
-    @Operation(summary = "Домашняя страницу пользователя")
+    @Operation(summary = "Домашняя страница пользователя")
     public ClientResponseDto getCurrentUser(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return clientService.getUser(userDetails.getId());
