@@ -10,7 +10,7 @@ services:
   app:
     build: .
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/order_system_spring_db
       SPRING_DATASOURCE_USERNAME: app_user
