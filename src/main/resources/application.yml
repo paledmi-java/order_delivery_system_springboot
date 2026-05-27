@@ -56,3 +56,7 @@ server:
     remoteip:
       protocol-header: X-Forwarded-Proto
       remote-ip-header: X-Forwarded-For
+
+springdoc:
+  swagger-ui:
+    path: /docs
