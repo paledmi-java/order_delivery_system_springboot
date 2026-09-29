@@ -30,8 +30,3 @@ REST API сервиса доставки товаров, разработанн�
 
 Проект содержит:
 - Unit-тесты (JUnit 5, Mockito)
-
-## Документация API
-
-Swagger UI:
-https://api.paleodmi.ru/docs

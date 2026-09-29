@@ -94,7 +94,6 @@ class BucketServiceUnitTest {
 
     @Test
     public void findClientById_ShouldFindClientSuccessfully() {
-
         when(clientRepository.findById(client.getClientId())).thenReturn(Optional.of(client));
         Client result = bucketService.findClientById(client.getClientId());
 

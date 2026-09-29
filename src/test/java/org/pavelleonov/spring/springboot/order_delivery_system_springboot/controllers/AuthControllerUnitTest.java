@@ -132,6 +132,7 @@ class AuthControllerUnitTest {
 
         verify(clientService).saveClient(any(ClientCreateDTO.class));
     }
+
     @Test
     void register_ShouldReturn400WhenInputInvalid() throws Exception{
 

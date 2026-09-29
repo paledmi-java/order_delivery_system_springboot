@@ -31,11 +31,12 @@ public class OrderService {
 
     private final ClientRepository clientRepository;
     private final OrderRepository orderRepository;
+    private final ClientAddressRepository clientAddressRepository;
 
     private final OrderItemMapper orderItemMapper;
     private final OrderMapper orderMapper;
     private final PageMapper pageMapper;
-    private final ClientAddressRepository clientAddressRepository;
+
 
     @Transactional
     public Client findClientById(int id) {
@@ -49,8 +50,9 @@ public class OrderService {
 
     @Transactional
     public OrderResponseDto makeAnOrder(int id, CreateOrderRequestDto dto) {
+        log.info("Creating new order: clientId = {}, areBonusesUsed = {}",
+                id, dto.getAreBonusesUsed());
 
-        log.info("Creating new order: clientId = {}, areBonusesUsed = {}", id, dto.getAreBonusesUsed());
         Client client = findClientById(id);
         Bucket bucket = client.getBucket();
 
@@ -64,7 +66,7 @@ public class OrderService {
         Order order = new Order();
 
         List<OrderItem> orderItems = bucketItems
-                .stream().map(orderItemMapper::mapBucketItemtoOrderItem)
+                .stream().map(item -> orderItemMapper.mapBucketItemtoOrderItem(item))
                 .toList();
 
         // SET ORDER ITEMS
@@ -78,6 +80,7 @@ public class OrderService {
         if (commentary == null) {
             commentary = "";
         }
+
         // SET COMMENTARY
         order.setCommentary(commentary);
 
@@ -98,9 +101,11 @@ public class OrderService {
         }
 
         int clientBonuses = client.getBonusesAmount();
+
         if (areBonusesUsed && price > clientBonuses) {
             price = price - clientBonuses;
             client.setBonusesAmount(0);
+
         } else if (areBonusesUsed) {
             client.setBonusesAmount(clientBonuses - price);
             price = 0;
